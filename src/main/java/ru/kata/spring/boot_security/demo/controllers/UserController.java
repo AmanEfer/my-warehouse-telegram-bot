@@ -21,7 +21,6 @@ public class UserController {
 
     @GetMapping
     public String userPage(Model model) {
-        System.out.println("UserController.userPage()");  // System.out.println()
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         model.addAttribute("user", userService.getUserByUsername(username));

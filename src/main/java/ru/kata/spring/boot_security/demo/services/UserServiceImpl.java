@@ -22,20 +22,17 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<User> getAllUsers() {
-        System.out.println("UserServiceImpl.getAllUsers()");  // System.out.println()
         return userRepository.findAll();
     }
 
     @Override
     public User getUser(Long id) {
-        System.out.println("UserServiceImpl.getUser()");  // System.out.println()
         return userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Override
     public User getUserByUsername(String username) {
-        System.out.println("UserServiceImpl.getUserByUsername()");  // System.out.println()
         return userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
@@ -43,14 +40,12 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void saveUser(User user) {
-        System.out.println("UserServiceImpl.saveUser()");  // System.out.println()
         userRepository.save(user);
     }
 
     @Override
     @Transactional
     public void updateUser(Long id, User user) {
-        System.out.println("UserServiceImpl.updateUser()");  // System.out.println()
         user.setId(id);
         userRepository.save(user);
     }
@@ -58,7 +53,6 @@ public class UserServiceImpl implements UserService{
     @Override
     @Transactional
     public void deleteUser(Long id) {
-        System.out.println("UserServiceImpl.deleteUser()");  // System.out.println()
         userRepository.deleteById(id);
     }
 }

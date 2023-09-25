@@ -26,7 +26,6 @@ public class UserValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        System.out.println("UserValidator.validate()");  // System.out.println()
         User checkedPerson = (User) target;
         Optional<User> foundUser = userRepository.findUserByUsername(checkedPerson.getUsername());
 

@@ -29,13 +29,11 @@ public class AuthController {
 
     @GetMapping("/login")
     public String loginPage() {
-        System.out.println("AuthController.loginPage()");
         return "/auth/login";
     }
 
     @GetMapping("/registration")
     public String registrationPage(Model model) {
-        System.out.println("AuthController.registrationPage()"); //System.out.println()
         model.addAttribute("user", new User());
         model.addAttribute("roles", roleService);
 
@@ -46,7 +44,6 @@ public class AuthController {
     public String performRegistration(@ModelAttribute("user") @Valid User user,
                                       @RequestParam("selectedRole") String selectedRole,
                                       BindingResult bindingResult) {
-        System.out.println("AuthController.performRegistration()");  //System.out.println()
         userValidator.validate(user, bindingResult);
 
         if (bindingResult.hasErrors()) {

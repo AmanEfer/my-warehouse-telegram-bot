@@ -24,7 +24,6 @@ public class RegistrationService {
 
     @Transactional
     public void register(User user, String roleName) {
-        System.out.println("RegistrationService.register()");  // System.out.println()
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         roleValidator.addRole(user, roleName);
