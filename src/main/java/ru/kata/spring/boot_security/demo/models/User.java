@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -26,12 +27,12 @@ public class User implements UserDetails {
     @Column(name = "id")
     private Long id;
 
-    @NotEmpty(message = "Username cannot be empty")
+    @NotBlank(message = "Username cannot be empty")
     @Size(min = 2, max = 20, message = "Username should be from 2 to 20 symbols")
     @Column(name = "username")
     private String username;
 
-    @NotEmpty(message = "Password cannot be empty")
+    @NotBlank(message = "Password cannot be empty")
     @Size(min = 2, message = "Password should have 2 symbols at least")
     @Column(name = "password")
     private String password;

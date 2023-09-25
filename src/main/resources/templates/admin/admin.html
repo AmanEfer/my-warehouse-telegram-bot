@@ -83,8 +83,89 @@
                                             </ul>
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-info">Edit</button>
-                                        </td>
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                    th:data-bs-target="'#userEdit' + ${user.getId()}">Edit
+                                            </button>
+                                            <div class="modal fade" th:id="'userEdit' + ${user.getId()}"
+                                                 data-bs-backdrop="static"
+                                                 data-bs-keyboard="false" tabindex="-1"
+                                                 aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <form th:method="PATCH"
+                                                              th:action="@{/admin/{id}(id=${user.getId()})}">
+                                                            <div class="modal-header">
+                                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                                                                    Edit user</h1>
+                                                                <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="mb-3">
+                                                                    <label for="id" class="form-label">ID</label>
+                                                                    <input th:value="${user.id}" type="number"
+                                                                           class="form-control" id="id" name="id"
+                                                                           readonly>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="username"
+                                                                           class="form-label">Username</label>
+                                                                    <input th:value="${user.username}" type="text"
+                                                                           class="form-control" id="username"
+                                                                           name="username">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="password"
+                                                                           class="form-label">Password</label>
+                                                                    <input th:value="${user.password}" type="password"
+                                                                           class="form-control" id="password"
+                                                                           name="password"
+                                                                           readonly>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="lastName"
+                                                                           class="form-label">Last name</label>
+                                                                    <input th:value="${user.lastName}" type="text"
+                                                                           class="form-control" id="lastName"
+                                                                           name="lastName">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="department"
+                                                                           class="form-label">Department</label>
+                                                                    <input th:value="${user.department}" type="text"
+                                                                           class="form-control" id="department"
+                                                                           name="department">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="salary"
+                                                                           class="form-label">Salary</label>
+                                                                    <input th:value="${user.salary}" type="number"
+                                                                           class="form-control" id="salary"
+                                                                           name="salary">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="selectedRole" class="form-label fw-bold">Role</label>
+                                                                    <select class="form-select form-select-sm mx-auto" style="width: 200px;"
+                                                                            name="selectedRole" id="selectedRole">
+                                                                        <option value="USER">USER</option>
+                                                                        <option value="ADMIN">ADMIN</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                        data-bs-dismiss="modal">Close
+                                                                </button>
+                                                                <button type="submit" class="btn btn-info">Edit</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </td>
+
+
                                         <td>
                                             <button type="button" class="btn btn-danger">Delete</button>
                                         </td>
@@ -94,52 +175,55 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="tab-pane fade" id="newUser" role="tabpanel" aria-labelledby="nav-newUser-tab">
                         <div class="card">
                             <div class="card-header">
                                 <h4><strong>Add new user</strong></h4>
                             </div>
-                            <div class="card-body">
-                                <form th:method="POST" th:action="@{/admin/new}" th:object="${user}">
+                            <div class="card-body text-center">
+                                <form th:method="POST" th:action="@{/admin/new}" th:object="${newUser}">
                                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                                    <div class="mb-2">
-                                        <label>
-                                            <input type="text" th:field="*{username}" class="form-control"
-                                                   placeholder="Username"/>
-                                        </label>
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label fw-bold">Username</label>
+                                        <input type="text" th:field="*{username}"
+                                               class="form-control form-control-sm mx-auto" style="width: 200px;"
+                                               id="username" placeholder="Username"/>
                                     </div>
-                                    <div class="mb-2">
-                                        <label>
-                                            <input type="password" th:field="*{password}" class="form-control"
-                                                   placeholder="Password"/>
-                                        </label>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label fw-bold">Password</label>
+                                        <input type="password" th:field="*{password}"
+                                               class="form-control form-control-sm mx-auto" style="width: 200px;"
+                                               id="password" placeholder="Password"/>
                                     </div>
-                                    <div class="mb-2">
-                                        <label>
-                                            <input type="text" th:field="*{lastName}" class="form-control"
-                                                   placeholder="Last name"/>
-                                        </label>
+                                    <div class="mb-3">
+                                        <label for="lastName" class="form-label fw-bold">Last Name</label>
+                                        <input type="text" th:field="*{lastName}"
+                                               class="form-control form-control-sm mx-auto" style="width: 200px;"
+                                               id="lastName" placeholder="Last name"/>
                                     </div>
-                                    <div class="mb-2">
-                                        <label>
-                                            <input type="text" th:field="*{department}" class="form-control"
-                                                   placeholder="Department"/>
-                                        </label>
+                                    <div class="mb-3">
+                                        <label for="department" class="form-label fw-bold">Department</label>
+                                        <input type="text" th:field="*{department}"
+                                               class="form-control form-control-sm mx-auto" style="width: 200px;"
+                                               id="department" placeholder="Department"/>
                                     </div>
-                                    <div class="mb-2">
-                                        <label>
-                                            <input type="number" th:field="*{salary}" class="form-control"
-                                                   placeholder="Salary"/>
-                                        </label>
+                                    <div class="mb-3">
+                                        <label for="salary" class="form-label fw-bold">Salary</label>
+                                        <input type="number" th:field="*{salary}"
+                                               class="form-control form-control-sm mx-auto" style="width: 200px;"
+                                               id="salary" placeholder="Salary"/>
                                     </div>
-                                    <div class="mb-2">
-                                        <select class="form-select" name="selectedRole" id="selectedRole">
+                                    <div class="mb-3">
+                                        <label for="selectedRole" class="form-label fw-bold">Role</label>
+                                        <select class="form-select form-select-sm mx-auto" style="width: 200px;"
+                                                name="selectedRole" id="selectedRole">
                                             <option value="USER">USER</option>
                                             <option value="ADMIN">ADMIN</option>
                                         </select>
                                     </div>
-                                    <div class="d-grid gap-2">
-                                        <button type="button" class="btn btn-success">Add new user</button>
+                                    <div class="d-grid gap-2 mx-auto" style="width: 200px;">
+                                        <button type="submit" class="btn btn-success">Add new user</button>
                                     </div>
                                 </form>
                             </div>
@@ -152,13 +236,9 @@
     </div>
 </div>
 
-</body>
-
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
         crossorigin="anonymous">
 </script>
 </body>
 </html>
-

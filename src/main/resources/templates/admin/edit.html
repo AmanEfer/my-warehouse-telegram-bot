@@ -1,69 +1,69 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <style>
-        body {
-            background-color: #EFEFEF;
-        }
+<!--<!DOCTYPE html>-->
+<!--<html lang="en" xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <style>-->
+<!--        body {-->
+<!--            background-color: #EFEFEF;-->
+<!--        }-->
 
-        .container {
-            text-align: center;
-            padding: 100px;
-        }
+<!--        .container {-->
+<!--            text-align: center;-->
+<!--            padding: 100px;-->
+<!--        }-->
 
-        .welcome {
-            font-size: 24px;
-            font-weight: bold;
-        }
+<!--        .welcome {-->
+<!--            font-size: 24px;-->
+<!--            font-weight: bold;-->
+<!--        }-->
 
-        .auth-button {
-            background-color: #002855;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            font-weight: bold;
-        }
+<!--        .auth-button {-->
+<!--            background-color: #002855;-->
+<!--            color: white;-->
+<!--            padding: 10px 20px;-->
+<!--            text-decoration: none;-->
+<!--            font-weight: bold;-->
+<!--        }-->
 
-        .auth-input {
-            margin: 10px;
-            padding: 5px;
-        }
+<!--        .auth-input {-->
+<!--            margin: 10px;-->
+<!--            padding: 5px;-->
+<!--        }-->
 
-        .right-top-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-    </style>
-</head>
-<body>
+<!--        .right-top-button {-->
+<!--            position: absolute;-->
+<!--            top: 10px;-->
+<!--            right: 10px;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
 
-<div class="container">
-    <div class="welcome">
-        <p>UPDATE USER</p>
-    </div>
-    <form th:method="PATCH" th:action="@{/admin/{id}(id=${user.getId()})}" th:object="${user}">
-        <input type="hidden" th:field="*{id}">
-        <input type="hidden" th:field="*{username}">
-        <input type="hidden" th:field="*{password}">
-<!--        <input type="hidden" th:field="*{getAuthorities()}">-->
-        <br/>
-        <input type="text" th:field="*{lastName}" id="lastName" class="auth-input" placeholder="Last name">
-        <br/>
-        <input type="text" th:field="*{department}" id="department" class="auth-input" placeholder="Department">
-        <br/>
-        <input type="number" th:field="*{salary}" id="salary" class="auth-input" placeholder="salary">
-        <br/>
-        <select name="selectedRole" id="selectedRole">
-            <option value="USER">USER</option>
-            <option value="ADMIN">ADMIN</option>
-        </select>
-        <br/><br/>
-        <button type="submit" class="auth-button">SIGN UP</button>
-    </form>
-</div>
+<!--<div class="container">-->
+<!--    <div class="welcome">-->
+<!--        <p>UPDATE USER</p>-->
+<!--    </div>-->
+<!--    <form th:method="PATCH" th:action="@{/admin/{id}(id=${user.getId()})}" th:object="${user}">-->
+<!--        <input type="hidden" th:field="*{id}">-->
+<!--        <input type="hidden" th:field="*{username}">-->
+<!--        <input type="hidden" th:field="*{password}">-->
+<!--&lt;!&ndash;        <input type="hidden" th:field="*{getAuthorities()}">&ndash;&gt;-->
+<!--        <br/>-->
+<!--        <input type="text" th:field="*{lastName}" id="lastName" class="auth-input" placeholder="Last name">-->
+<!--        <br/>-->
+<!--        <input type="text" th:field="*{department}" id="department" class="auth-input" placeholder="Department">-->
+<!--        <br/>-->
+<!--        <input type="number" th:field="*{salary}" id="salary" class="auth-input" placeholder="salary">-->
+<!--        <br/>-->
+<!--        <select name="selectedRole" id="selectedRole">-->
+<!--            <option value="USER">USER</option>-->
+<!--            <option value="ADMIN">ADMIN</option>-->
+<!--        </select>-->
+<!--        <br/><br/>-->
+<!--        <button type="submit" class="auth-button">SIGN UP</button>-->
+<!--    </form>-->
+<!--</div>-->
 
-<a href="/admin" class="auth-button right-top-button">ADMIN PAGE</a>
+<!--<a href="/admin" class="auth-button right-top-button">ADMIN PAGE</a>-->
 
-</body>
-</html>
+<!--</body>-->
+<!--</html>-->
