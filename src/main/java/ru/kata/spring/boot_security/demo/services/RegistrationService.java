@@ -5,19 +5,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 import ru.kata.spring.boot_security.demo.util.RoleValidator;
 
 @Service
 public class RegistrationService {
 
-    private final UserRepository usersRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final RoleValidator roleValidator;
 
     @Autowired
-    public RegistrationService(UserRepository usersRepository, PasswordEncoder passwordEncoder, RoleValidator roleValidator) {
-        this.usersRepository = usersRepository;
+    public RegistrationService(UserService userService, PasswordEncoder passwordEncoder, RoleValidator roleValidator) {
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.roleValidator = roleValidator;
     }
@@ -28,6 +27,6 @@ public class RegistrationService {
 
         roleValidator.addRole(user, roleName);
 
-        usersRepository.save(user);
+        userService.saveUser(user);
     }
 }
