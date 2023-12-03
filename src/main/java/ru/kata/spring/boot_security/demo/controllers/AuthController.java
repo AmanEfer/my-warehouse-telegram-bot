@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,6 +12,7 @@ import ru.kata.spring.boot_security.demo.services.RegistrationService;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.util.UserValidator;
 
+@Slf4j
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
@@ -29,11 +31,13 @@ public class AuthController {
 
     @GetMapping("/login")
     public String loginPage() {
+        log.info("AuthController.loginPage()");
         return "/auth/login";
     }
 
     @GetMapping("/registration")
     public String registrationPage(Model model) {
+        log.info("AuthController.registrationPage()");
         model.addAttribute("user", new User());
         model.addAttribute("roles", roleService);
 
@@ -44,9 +48,11 @@ public class AuthController {
     public String performRegistration(@ModelAttribute("user") @Valid User user,
                                       @RequestParam("selectedRole") String selectedRole,
                                       BindingResult bindingResult) {
+        log.info("AuthController.performRegistration()");
         userValidator.validate(user, bindingResult);
 
         if (bindingResult.hasErrors()) {
+            log.info("AuthController.performRegistration hasErrors");
             return "/auth/registration";
         }
 
