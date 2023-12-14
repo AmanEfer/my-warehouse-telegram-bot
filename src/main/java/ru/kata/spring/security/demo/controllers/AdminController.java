@@ -1,17 +1,24 @@
-package ru.kata.spring.boot_security.demo.controllers;
+package ru.kata.spring.security.demo.controllers;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.models.Role;
-import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.services.RegistrationService;
-import ru.kata.spring.boot_security.demo.services.UserService;
-import ru.kata.spring.boot_security.demo.util.UserValidator;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import ru.kata.spring.security.demo.models.Role;
+import ru.kata.spring.security.demo.models.User;
+import ru.kata.spring.security.demo.services.RegistrationService;
+import ru.kata.spring.security.demo.services.UserService;
+import ru.kata.spring.security.demo.util.UserValidator;
 
 @Controller
 @RequestMapping("/admin")
@@ -32,10 +39,10 @@ public class AdminController {
 
     @GetMapping
     public String showAllPeople(Model model) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         model.addAttribute("users", userService.getAllUsers());
-        model.addAttribute("user", userService.getUserByUsername(username));
+        model.addAttribute("user", userService.getUserByUsername(""));
         model.addAttribute("newUser", new User());
         return "admin/admin";
     }

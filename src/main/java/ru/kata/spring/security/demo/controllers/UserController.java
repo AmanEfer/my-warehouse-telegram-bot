@@ -1,12 +1,12 @@
-package ru.kata.spring.boot_security.demo.controllers;
+package ru.kata.spring.security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+//import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
+import ru.kata.spring.security.demo.services.UserServiceImpl;
 
 @Controller
 @RequestMapping("/user")
@@ -21,9 +21,9 @@ public class UserController {
 
     @GetMapping
     public String userPage(Model model) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
-        model.addAttribute("user", userService.getUserByUsername(username));
+        model.addAttribute("user", userService.getUserByUsername(""));
 
         return "user/home";
     }

@@ -1,9 +1,9 @@
-package ru.kata.spring.boot_security.demo.services;
+package ru.kata.spring.security.demo.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.kata.spring.boot_security.demo.models.Role;
-import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
+import ru.kata.spring.security.demo.models.Role;
+import ru.kata.spring.security.demo.repositories.RoleRepository;
 
 import java.util.List;
 
@@ -19,9 +19,11 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role getRoleByName(String name) {
-        return roleRepository.findRoleByName(name).orElse(null);
+        return roleRepository.findRoleByName(name)
+                .orElse(null);//todo нельзя осталять null
     }
-@Override
+
+    @Override
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
     }
