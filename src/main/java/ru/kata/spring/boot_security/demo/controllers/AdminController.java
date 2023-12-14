@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import ru.kata.spring.boot_security.demo.services.RegistrationService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 import ru.kata.spring.boot_security.demo.util.UserValidator;
 
+@Slf4j
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -32,6 +34,7 @@ public class AdminController {
 
     @GetMapping
     public String showAllPeople(Model model) {
+        log.info("AdminController.showAllPeople()");
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         model.addAttribute("users", userService.getAllUsers());
@@ -44,6 +47,7 @@ public class AdminController {
     public String createUser(@ModelAttribute("newUser") @Valid User user,
                              @RequestParam("selectedRole") String selectedRole,
                              BindingResult bindingResult) {
+        log.info("AdminController.createUser()");
         userValidator.validate(user, bindingResult);
 
         if (bindingResult.hasErrors()) {
@@ -58,6 +62,7 @@ public class AdminController {
     @PatchMapping("/{id}")
     public String updateUser(@ModelAttribute("user") User user, @PathVariable("id") Long id,
                              @RequestParam("selectedRole") String selectedRole) {
+        log.info("AdminController.updateUser()");
         user.getRole().add(new Role(selectedRole));
 
         userService.updateUser(id, user);
@@ -67,6 +72,7 @@ public class AdminController {
 
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable("id") Long id) {
+        log.info("AdminController.deleteUser()");
         userService.deleteUser(id);
 
         return "redirect:/admin";
