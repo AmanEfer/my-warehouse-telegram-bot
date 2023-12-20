@@ -20,7 +20,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Role getRoleByName(String name) {
         return roleRepository.findRoleByName(name)
-                .orElse(null);//todo нельзя осталять null
+                .orElseThrow(() -> new IllegalArgumentException("No such role"));//todo нельзя осталять null
     }
 
     @Override

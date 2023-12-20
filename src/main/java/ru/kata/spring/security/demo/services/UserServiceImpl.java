@@ -6,35 +6,42 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.security.demo.models.User;
 import ru.kata.spring.security.demo.repositories.UserRepository;
+import ru.kata.spring.security.demo.dto.UserDto;
+import ru.kata.spring.security.demo.mappers.UserMapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public User getUser(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    public UserDto getUser(Long id) {
+        return userMapper.toDto(userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found")));
     }
 
     @Override
-    public User getUserByUsername(String username) {
-        return userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+    public UserDto getUserByUsername(String username) {
+        return userMapper.toDto(userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found")));
     }
 
     @Override

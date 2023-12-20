@@ -1,7 +1,6 @@
 package ru.kata.spring.security.demo.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 import ru.kata.spring.security.demo.models.Role;
 
 import java.util.Optional;

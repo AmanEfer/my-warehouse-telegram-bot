@@ -1,5 +1,6 @@
 package ru.kata.spring.security.demo.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -9,6 +10,7 @@ import ru.kata.spring.security.demo.repositories.UserRepository;
 
 import java.util.Optional;
 
+@Slf4j
 @Component
 public class UserValidator implements Validator {
 
@@ -21,11 +23,13 @@ public class UserValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
+        log.info("UserValidator.supports()");
         return User.class.equals(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
+        log.info("UserValidator.validate()");
         User checkedPerson = (User) target;
         Optional<User> foundUser = userRepository.findUserByUsername(checkedPerson.getUsername());
 
