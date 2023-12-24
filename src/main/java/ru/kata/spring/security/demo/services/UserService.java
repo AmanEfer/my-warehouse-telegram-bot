@@ -12,9 +12,9 @@ public interface UserService {
     UserDto getUser(Long id);
     UserDto getUserByUsername(String username);
 
-    void saveUser(User person);
+    UserDto saveUser(User person);
 
-    void updateUser(Long id, User person);
+    UserDto updateUser(Long id, User person);
 
     void deleteUser(Long id);
 }

@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.kata.spring.security.demo.dto.UserDto;
+import ru.kata.spring.security.demo.mappers.UserMapper;
 import ru.kata.spring.security.demo.models.User;
 import ru.kata.spring.security.demo.util.RoleValidator;
 
@@ -13,20 +15,20 @@ public class RegistrationService {
     private final UserService userService;
 //    private final PasswordEncoder passwordEncoder;
     private final RoleValidator roleValidator;
+    private final UserMapper userMapper;
 
     @Autowired
-    public RegistrationService(UserService userService, RoleValidator roleValidator) {
+    public RegistrationService(UserService userService, RoleValidator roleValidator, UserMapper userMapper) {
         this.userService = userService;
         this.roleValidator = roleValidator;
+        this.userMapper = userMapper;
     }
 
     @Transactional
-    public User register(User user, String roleName) {
+    public UserDto register(User user, String roleName) {
 //        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
         roleValidator.addRole(user, roleName);
 
-        userService.saveUser(user);
-        return user;
+        return userService.saveUser(user);
     }
 }

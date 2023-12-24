@@ -34,8 +34,7 @@ public class UserValidatorTest {
                 .content(userJson)
                 .param("selectedRole", "ROLE_ADMIN"));
 
-        result.andExpect(status().is3xxRedirection());
-//        result.andExpect(status().isOk());
+        result.andExpect(status().isOk());
  }
 
     @Test
