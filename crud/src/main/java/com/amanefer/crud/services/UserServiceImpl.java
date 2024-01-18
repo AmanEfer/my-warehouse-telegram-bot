@@ -1,0 +1,68 @@
+package com.amanefer.crud.services;
+
+import com.amanefer.crud.repositories.UserRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import com.amanefer.crud.models.User;
+import com.amanefer.crud.dto.UserDto;
+import com.amanefer.crud.mappers.UserMapper;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Slf4j
+@Service
+@Transactional(readOnly = true)
+public class UserServiceImpl implements UserService{
+
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+    }
+
+    @Override
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public UserDto getUser(Long id) {
+        return userMapper.toDto(userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found")));
+    }
+
+    @Override
+    public UserDto getUserByUsername(String username) {
+        return userMapper.toDto(userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("User not found")));
+    }
+
+    @Override
+    @Transactional
+    public UserDto saveUser(User user) {
+        userRepository.save(user);
+
+        return userMapper.toDto(user);
+    }
+
+    @Override
+    @Transactional
+    public UserDto updateUser(User user) {
+        return saveUser(user);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+}
