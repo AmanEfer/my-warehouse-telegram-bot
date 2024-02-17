@@ -13,5 +13,5 @@ public interface RoleMapper extends MyMapper<Role, RoleDto> {
     RoleDto toDto(Role role);
 
     @Override
-    Role toModel(RoleDto roleDto);
+    Role toUser(RoleDto roleDto);
 }

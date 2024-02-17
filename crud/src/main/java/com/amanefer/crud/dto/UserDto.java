@@ -10,11 +10,11 @@ import java.util.Set;
 @Getter
 @Setter
 public class UserDto {
-    private Long id;
+    private long id;
     private String username;
-    private String password;
+//    private String password;
     private Set<Role> role = new HashSet<>();
-    private String lastName;
-    private String department;
-    private int salary;
+//    private String lastName;
+//    private String department;
+//    private int salary;
 }

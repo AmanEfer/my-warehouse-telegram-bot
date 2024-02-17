@@ -13,5 +13,5 @@ public interface UserMapper extends MyMapper<User, UserDto> {
     UserDto toDto(User user);
 
     @Override
-    User toModel(UserDto userDto);
+    User toUser(UserDto userDto);
 }

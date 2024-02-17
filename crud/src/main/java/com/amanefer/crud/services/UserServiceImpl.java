@@ -11,6 +11,7 @@ import com.amanefer.crud.dto.UserDto;
 import com.amanefer.crud.mappers.UserMapper;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -21,7 +22,6 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    @Autowired
     public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
@@ -35,15 +35,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public UserDto getUser(Long id) {
-        return userMapper.toDto(userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found")));
+    public Optional<User> getUser(Long id) {
+        return userRepository.findById(id);
     }
 
     @Override
-    public UserDto getUserByUsername(String username) {
-        return userMapper.toDto(userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("User not found")));
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findUserByUsername(username);
     }
 
     @Override

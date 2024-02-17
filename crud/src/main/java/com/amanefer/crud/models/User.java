@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,6 +28,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PUBLIC, force = true)
+@AllArgsConstructor
 @ToString
 @Entity
 @Table(name = "users")
@@ -35,7 +37,7 @@ public class User {
     private static final long serialVersionUID = 1;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -44,10 +46,10 @@ public class User {
     @Column(name = "username")
     private String username;
 
-    @NotEmpty(message = "Password cannot be empty")
-    @Size(min = 2, message = "Password should have 2 symbols at least")
-    @Column(name = "password")
-    private String password;
+//    @NotEmpty(message = "Password cannot be empty")
+//    @Size(min = 2, message = "Password should have 2 symbols at least")
+//    @Column(name = "password")
+//    private String password;
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
@@ -57,21 +59,21 @@ public class User {
     private Set<Role> role = new HashSet<>();
 
 
-    @Column(name = "last_name")
-    private String lastName;
+//    @Column(name = "last_name")
+//    private String lastName;
+//
+//    @Column(name = "department")
+//    private String department;
+//
+//    @Column(name = "salary")
+//    private int salary;
 
-    @Column(name = "department")
-    private String department;
 
-    @Column(name = "salary")
-    private int salary;
-
-
-    public User(String username, String lastName, String department, int salary) {
-        this.username = username;
-        this.lastName = lastName;
-        this.department = department;
-        this.salary = salary;
-    }
+//    public User(String username, String lastName, String department, int salary) {
+//        this.username = username;
+//        this.lastName = lastName;
+//        this.department = department;
+//        this.salary = salary;
+//    }
 
 }

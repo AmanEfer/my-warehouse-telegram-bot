@@ -27,7 +27,7 @@ public class UserValidatorTest {
     public void valid() throws Exception {
         User user = new User();
         user.setUsername("correct5465");
-        user.setPassword("password");
+//        user.setPassword("password");
         String userJson = objectMapper.writeValueAsString(user);
         ResultActions result = mockMvc.perform(post("/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -41,7 +41,7 @@ public class UserValidatorTest {
     public void validError() throws Exception {
         User user = new User();
 //        user.setUsername("correct");
-        user.setPassword("password");
+//        user.setPassword("password");
         String userJson = objectMapper.writeValueAsString(user);
         ResultActions result = mockMvc.perform(post("/auth/registration")
                 .contentType(MediaType.APPLICATION_JSON)

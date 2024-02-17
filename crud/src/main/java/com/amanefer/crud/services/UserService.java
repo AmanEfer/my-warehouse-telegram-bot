@@ -4,14 +4,15 @@ import com.amanefer.crud.models.User;
 import com.amanefer.crud.dto.UserDto;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface UserService {
 
     List<UserDto> getAllUsers();
 
-    UserDto getUser(Long id);
-    UserDto getUserByUsername(String username);
+    Optional<User> getUser(Long id);
+    Optional<User> getUserByUsername(String username);
 
     UserDto saveUser(User person);
 
