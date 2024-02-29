@@ -13,9 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -33,12 +31,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     private final RestToCrud rest;
     private final BotConfig botConfig;
-//    private String botToken;
-
-//    public TelegramBot(String botToken, BotConfig botConfig) {
-//        super(botToken);
-//        this.botConfig = botConfig;
-//    }
 
     public TelegramBot(BotConfig botConfig, RestToCrud rest) {
         this.botConfig = botConfig;
@@ -79,9 +71,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                 default:
                     sendMessage(chatId, "Sorry, command wasn't recognized");
             }
-//        } else if (update.hasCallbackQuery()) {
-//            String data = update.getCallbackQuery().getData();
-
         }
     }
 
@@ -111,36 +100,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         user = rest.registerNewUser(user, ROLE_ADMIN);
 
-//        SendMessage sendMessage = new SendMessage();
-//        sendMessage.setChatId(chatId);
-//        sendMessage.setText("Choose your role");
-//
-//        InlineKeyboardMarkup inlineKeyboardMarkup = createInlineKeyboardMarkup();
-//        sendMessage.setReplyMarkup(inlineKeyboardMarkup);
-
         sendMessage(message.getChatId(), String.format("User with username \'%s\' was registered", user.getUsername()));
-    }
-
-    private static InlineKeyboardMarkup createInlineKeyboardMarkup() {
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> inlineRows = new ArrayList<>();
-        List<InlineKeyboardButton> row = new ArrayList<>();
-
-        var userButton = new InlineKeyboardButton();
-        userButton.setText("User");
-        userButton.setCallbackData(ROLE_USER);
-
-        var adminButton = new InlineKeyboardButton();
-        adminButton.setText("Admin");
-        adminButton.setCallbackData(ROLE_ADMIN);
-
-        row.add(userButton);
-        row.add(adminButton);
-
-        inlineRows.add(row);
-
-        inlineKeyboardMarkup.setKeyboard(inlineRows);
-        return inlineKeyboardMarkup;
     }
 
     private void startCommandReceived(long chatId, String firstName) {

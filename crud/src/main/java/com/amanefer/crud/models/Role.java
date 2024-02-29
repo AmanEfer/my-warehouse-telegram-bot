@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-//import org.springframework.security.core.GrantedAuthority;
 
 @Getter
 @Setter
@@ -32,8 +31,4 @@ public class Role {
         this.name = name;
     }
 
-//    @Override
-//    public String getAuthority() {
-//        return "ROLE_" + name;
-//    }
 }

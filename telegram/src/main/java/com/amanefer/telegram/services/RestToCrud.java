@@ -7,9 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -23,8 +20,7 @@ public class RestToCrud {
     public static final String URI = "http://localhost:8080/crud";
     private final RestTemplate restTemplate;
 
-    @PostMapping()
-    public UserDto registerNewUser(@RequestBody UserDto userDto, String selectedRole) {
+    public UserDto registerNewUser(UserDto userDto, String selectedRole) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -37,14 +33,12 @@ public class RestToCrud {
         return responseEntity.getBody();
     }
 
-    @GetMapping
     public List<UserDto> getUsers() {
         ResponseEntity<UserDto[]> response = restTemplate.getForEntity(URI, UserDto[].class);
 
         return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
 
-    @GetMapping
     public UserDto getUser(long id) {
         ResponseEntity<UserDto> response = restTemplate.getForEntity(String.format(URI + "/%s", id), UserDto.class);
 
