@@ -5,7 +5,7 @@
 
     <groupId>com.amanefer.studyapp</groupId>
     <artifactId>spring-boot-edu-app</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>spring-boot-edu-app</name>
     <description>My educational Spring Boot application</description>
