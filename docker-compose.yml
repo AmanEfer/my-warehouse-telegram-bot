@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  crud:
+    build: ./crud
+    ports:
+      - '8082:8082'
+    container_name: crud
+    extra_hosts:
+      - "crud:127.0.0.1"
+    environment:
+      spring.datasource.url: jdbc:mysql://localhost:3306/my_db
+      spring.datasource.username: root1
+      spring.datasource.password: rootroot
+    depends_on:
+      - db
+
+  telegram:
+    build: ./telegram
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+    environment:
+      logging.level.root: INFO
+      telegram.botUserName: MyCRUD_bot
+      telegram.botToken: 6658358181:AAGToQHSrSacsnsSwvI2G-BHYzW31d1mDNo
+    container_name: telegram
+    depends_on:
+      - crud
+
+  db:
+    image: mysql:latest
+    container_name: db
+    restart: always
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_USER: root1
+      MYSQL_PASSWORD: rootroot
+      MYSQL_SCHEMA: my_db
