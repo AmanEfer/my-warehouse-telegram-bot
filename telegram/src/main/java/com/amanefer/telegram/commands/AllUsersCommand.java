@@ -23,9 +23,7 @@ public class AllUsersCommand implements Command {
 
     @Override
     public SendMessage process(Message msg) {
-        List<UserDto> users = rest.getUsers();
-
-        String result = users.stream()
+        String result = rest.getUsers().stream()
                 .map(UserDto::getUsername)
                 .collect(Collectors.joining("\n"));
 

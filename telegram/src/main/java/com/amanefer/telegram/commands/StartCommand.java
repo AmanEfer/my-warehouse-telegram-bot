@@ -12,6 +12,8 @@ import java.util.List;
 @Component
 public class StartCommand implements Command {
 
+    private String ANSWER = "Hi, %s, nice to meet you!";
+
     @Override
     public boolean support(String command) {
         return command.equalsIgnoreCase("/start");
@@ -22,7 +24,7 @@ public class StartCommand implements Command {
         long chatId = msg.getChatId();
         String firstName = msg.getChat().getUserName();
 
-        String answer = "Hi, " + firstName + ", nice to meet you!";
+        String answer = String.format(ANSWER, firstName);
 
         return createReplyKeyboardMarkup(chatId, answer);
     }
