@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  crud:
+    build: ./crud
+    ports:
+      - '8082:8082'
+    container_name: crud
+    extra_hosts:
+      - "crud:127.0.0.1"
+    environment:
+      spring.datasource.url: jdbc:postgresql://db:5432/my_db
+      spring.datasource.username: postgres
+      spring.datasource.password: postgres
+    depends_on:
+      - db
+
+  telegram:
+    build: ./telegram
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+    environment:
+      logging.level.root: INFO
+      telegram.botUserName: MyCRUD_bot
+      telegram.botToken:
+    extra_hosts:
+      - "telegram:127.0.0.1"
+    container_name: telegram
+    depends_on:
+      - crud
+
+  db:
+    image: postgres:latest
+    container_name: db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD:
+      POSTGRES_DB: my_db
+      POSTGRES_SCHEMA: my_db_bot
