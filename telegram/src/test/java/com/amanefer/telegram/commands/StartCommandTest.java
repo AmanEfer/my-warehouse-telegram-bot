@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
@@ -25,16 +26,19 @@ class StartCommandTest {
 
     @BeforeEach
     public void init() {
+
         command = new StartCommand();
     }
 
     @Test
     public void startCommand_supportTest() {
+
         assertTrue(command.support(START_BUTTON));
     }
 
     @Test
     public void startCommand_processTest_checkReturnedMessage() {
+
         Mockito.when(msg.getChatId()).thenReturn(CHAT_ID);
 
         Chat chat = new Chat();
@@ -44,6 +48,9 @@ class StartCommandTest {
 
         String expected = "Hi, user1, nice to meet you!";
 
-        assertEquals(expected, command.process(msg).getText());
+        SendMessage actual = (SendMessage) command.process(msg);
+
+        assertEquals(expected, actual.getText());
     }
+
 }

@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 
@@ -22,8 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(MockitoExtension.class)
 class RegisterCommandTest {
 
-    private static final String REGISTER_BUTTON = "/register";
-    private static final String REGISTER_NEW_USER_BUTTON = "register new user";
     private static final String ROLE_ADMIN = "ROLE_ADMIN";
     private static final Long CHAT_ID = 123456L;
 
@@ -37,17 +36,20 @@ class RegisterCommandTest {
 
     @BeforeEach
     public void init() {
+
         command = new RegisterCommand(rest);
     }
 
     @ParameterizedTest
-    @CsvSource({REGISTER_BUTTON, REGISTER_NEW_USER_BUTTON})
+    @CsvSource({"/register", "register new user"})
     public void registerCommand_supportTest(String commandName) {
+
         assertTrue(command.support(commandName));
     }
 
     @Test
     public void registerCommand_processTest_checkReturnedMessage() {
+
         User user = new User();
         user.setId(1L);
         user.setUserName("user1");
@@ -61,6 +63,9 @@ class RegisterCommandTest {
 
         String expected = "User with username 'user1' was registered";
 
-        assertEquals(expected, command.process(msg).getText());
+        SendMessage actual = (SendMessage) command.process(msg);
+
+        assertEquals(expected, actual.getText());
     }
+
 }

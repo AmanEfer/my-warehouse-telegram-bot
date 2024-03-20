@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.List;
@@ -35,16 +36,19 @@ class AllUsersCommandTest {
 
     @BeforeEach
     public void init() {
+
         command = new AllUsersCommand(rest);
     }
 
     @Test
     public void allUsersCommand_supportTest() {
+
         assertTrue(command.support(GET_ALL_USERS_BUTTON));
     }
 
     @Test
     public void allUsersCommand_processTest_checkReturnedMessage() {
+
         List<UserDto> userDtoList = List.of(
                 new UserDto(1, "user1", Set.of(new RoleDto(1, ROLE_ADMIN))),
                 new UserDto(2, "user2", Set.of(new RoleDto(2, ROLE_USER))),
@@ -59,6 +63,9 @@ class AllUsersCommandTest {
                 user2
                 user3""";
 
-        assertEquals(expected, command.process(msg).getText());
+        SendMessage actual = (SendMessage) command.process(msg);
+
+        assertEquals(expected, actual.getText());
     }
+
 }

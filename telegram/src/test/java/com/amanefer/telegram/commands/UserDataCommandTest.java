@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 
@@ -33,16 +34,19 @@ class UserDataCommandTest {
 
     @BeforeEach
     public void init() {
+
         command = new UserDataCommand(rest);
     }
 
     @Test
     public void userDataCommand_supportTest() {
+
         assertTrue(command.support(GET_MY_DATA));
     }
 
     @Test
     public void userDataCommand_processTest_checkReturnedMessage() {
+
         User user = new User();
         user.setId(1L);
 
@@ -57,6 +61,9 @@ class UserDataCommandTest {
                 username: user1
                 role: admin""";
 
-        assertEquals(expected, command.process(msg).getText());
+        SendMessage actual = (SendMessage) command.process(msg);
+
+        assertEquals(expected, actual.getText());
     }
+
 }

@@ -17,31 +17,41 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class RestToCrud {
 
-    public static final String URI = "http://localhost:8080/crud";
+    public static final String URI_GET_USERS = "http://localhost:8080/crud";
+    public static final String URI_GET_USER = "http://localhost:8080/crud/%s";
+    public static final String URI_REGISTER_NEW_USER = "http://localhost:8080/crud/new?selectedRole=%s";
+    public static final String URI_FILES_EXPORT = "http://localhost:8082/filesExport";
+
     private final RestTemplate restTemplate;
 
+
     public UserDto registerNewUser(UserDto userDto, String selectedRole) {
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<UserDto> requestEntity = new HttpEntity<>(userDto, headers);
 
-        String uri = String.format("http://localhost:8080/crud/new?selectedRole=%s", selectedRole);
+        String uri = String.format(URI_REGISTER_NEW_USER, selectedRole);
 
-        ResponseEntity<UserDto> responseEntity = restTemplate.postForEntity(uri, requestEntity, UserDto.class);
-
-        return responseEntity.getBody();
+        return restTemplate.postForEntity(uri, requestEntity, UserDto.class).getBody();
     }
 
     public List<UserDto> getUsers() {
-        ResponseEntity<UserDto[]> response = restTemplate.getForEntity(URI, UserDto[].class);
+
+        ResponseEntity<UserDto[]> response = restTemplate.getForEntity(URI_GET_USERS, UserDto[].class);
 
         return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
 
     public UserDto getUser(long id) {
-        ResponseEntity<UserDto> response = restTemplate.getForEntity(String.format(URI + "/%s", id), UserDto.class);
 
-        return response.getBody();
+        return restTemplate.getForEntity(String.format(URI_GET_USER, id), UserDto.class).getBody();
     }
+
+    public byte[] exportFile() {
+
+        return restTemplate.getForEntity(URI_FILES_EXPORT, byte[].class).getBody();
+    }
+
 }
