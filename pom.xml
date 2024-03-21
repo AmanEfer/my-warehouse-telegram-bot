@@ -22,6 +22,7 @@
     <modules>
         <module>crud</module>
         <module>telegram</module>
+        <module>filesExporter</module>
     </modules>
 
     <dependencyManagement>
