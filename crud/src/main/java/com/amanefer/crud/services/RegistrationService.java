@@ -1,6 +1,7 @@
 package com.amanefer.crud.services;
 
 import com.amanefer.crud.mappers.UserMapper;
+import com.amanefer.crud.services.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

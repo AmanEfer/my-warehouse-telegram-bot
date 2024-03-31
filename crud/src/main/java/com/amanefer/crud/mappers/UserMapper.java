@@ -7,11 +7,11 @@ import com.amanefer.crud.models.User;
 
 @Component
 @Mapper(componentModel = "spring")
-public interface UserMapper extends MyMapper<User, UserDto> {
+public interface UserMapper extends BaseMapper<User, UserDto> {
 
     @Override
     UserDto toDto(User user);
 
     @Override
-    User toUser(UserDto userDto);
+    User toEntity(UserDto userDto);
 }

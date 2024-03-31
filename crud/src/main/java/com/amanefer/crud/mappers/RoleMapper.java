@@ -7,11 +7,11 @@ import com.amanefer.crud.models.Role;
 
 @Component
 @Mapper(componentModel = "spring")
-public interface RoleMapper extends MyMapper<Role, RoleDto> {
+public interface RoleMapper extends BaseMapper<Role, RoleDto> {
 
     @Override
     RoleDto toDto(Role role);
 
     @Override
-    Role toUser(RoleDto roleDto);
+    Role toEntity(RoleDto roleDto);
 }

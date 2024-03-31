@@ -3,7 +3,7 @@ package com.amanefer.crud.controllers;
 import com.amanefer.crud.dto.UserDto;
 import com.amanefer.crud.mappers.UserMapper;
 import com.amanefer.crud.services.RegistrationService;
-import com.amanefer.crud.services.UserService;
+import com.amanefer.crud.services.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,14 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/crud")
-public class MainController {
+@RequestMapping("/api/crud/users")
+public class UserController {
 
     private final UserService userService;
     private final RegistrationService registrationService;
     private final UserMapper userMapper;
 
-    public MainController(UserService userService,
+    public UserController(UserService userService,
                           RegistrationService registrationService,
                           UserMapper userMapper) {
         this.userService = userService;
@@ -45,15 +45,15 @@ public class MainController {
                 .orElseThrow(() -> new IllegalArgumentException("User not found")));
     }
 
-    @PostMapping("/new")
+    @PostMapping
     public UserDto createUser(@RequestBody UserDto userDto,
                               @RequestParam("selectedRole") String selectedRole) {
-        return registrationService.register(userMapper.toUser(userDto), selectedRole);
+        return registrationService.register(userMapper.toEntity(userDto), selectedRole);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping
     public UserDto updateUser(@RequestBody UserDto userDto) {
-        return userService.updateUser(userMapper.toUser(userDto));
+        return userService.updateUser(userMapper.toEntity(userDto));
     }
 
     @DeleteMapping("/{id}")

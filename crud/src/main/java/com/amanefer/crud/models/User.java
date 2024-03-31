@@ -27,7 +27,7 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "users")
+@Table(name = "my_user", schema = "my_db_bot")
 public class User {
 
     private static final long serialVersionUID = 1;

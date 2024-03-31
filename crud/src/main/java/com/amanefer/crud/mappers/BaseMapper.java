@@ -1,7 +1,7 @@
 package com.amanefer.crud.mappers;
 
-public interface MyMapper<U, D> {
+public interface BaseMapper<U, D> {
     D toDto(U u);
 
-    U toUser(D d);
+    U toEntity(D d);
 }

@@ -1,4 +1,4 @@
-package com.amanefer.crud.services;
+package com.amanefer.crud.services.user;
 
 import com.amanefer.crud.models.User;
 import com.amanefer.crud.dto.UserDto;

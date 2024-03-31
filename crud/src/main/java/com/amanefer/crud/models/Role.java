@@ -16,7 +16,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @Entity
-@Table(name = "roles")
+@Table(name = "my_role", schema = "my_db_bot")
 public class Role {
 
     @Id
