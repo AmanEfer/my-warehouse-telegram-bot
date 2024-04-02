@@ -1,14 +1,12 @@
 package com.amanefer.crud.dto;
 
 import com.amanefer.crud.models.Role;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
+@Data
 public class UserDto {
     private long id;
     private String username;

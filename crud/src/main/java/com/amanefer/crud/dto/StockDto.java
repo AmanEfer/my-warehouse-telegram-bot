@@ -1,10 +1,8 @@
 package com.amanefer.crud.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class StockDto {
 
     private Long id;

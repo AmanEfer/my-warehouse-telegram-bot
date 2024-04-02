@@ -1,7 +1,6 @@
 package com.amanefer.crud.controllers;
 
 import com.amanefer.crud.dto.StockDto;
-import com.amanefer.crud.mappers.StockMapper;
 import com.amanefer.crud.services.stock.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,10 +23,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StockController {
 
-    public static final String DELETE_MESSAGE = "Stock with ID %d was deleted";
+    public static final String DELETE_STOCK_MESSAGE = "Stock with ID %d was deleted";
 
     private final StockService stockService;
-    private final StockMapper stockMapper;
 
     @GetMapping("/all")
     public List<StockDto> getAllStocks() {
@@ -51,13 +49,19 @@ public class StockController {
     @ResponseStatus(HttpStatus.CREATED)
     public StockDto saveStock(@RequestBody StockDto stockDto) {
 
-        return stockService.saveStock(stockMapper.toEntity(stockDto));
+        return stockService.saveStock(stockDto);
     }
 
-    @PatchMapping
-    public StockDto updateStock(@RequestBody StockDto stockDto) {
+    @PostMapping("/all")
+    public List<StockDto> saveAllStocks(@RequestBody List<StockDto> stockDtoList) {
 
-        return stockService.updateStock(stockMapper.toEntity(stockDto));
+        return stockService.saveAllStocks(stockDtoList);
+    }
+
+    @PatchMapping("/{id}")
+    public StockDto updateStock(@PathVariable("id") Long id, @RequestBody StockDto stockDto) {
+
+        return stockService.updateStock(id, stockDto);
     }
 
     @DeleteMapping("/{id}")
@@ -65,6 +69,6 @@ public class StockController {
 
         stockService.deleteStock(id);
 
-        return new ResponseEntity<>(String.format(DELETE_MESSAGE, id), HttpStatus.OK);
+        return new ResponseEntity<>(String.format(DELETE_STOCK_MESSAGE, id), HttpStatus.OK);
     }
 }

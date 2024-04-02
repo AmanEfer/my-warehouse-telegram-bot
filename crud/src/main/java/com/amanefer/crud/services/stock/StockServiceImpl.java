@@ -17,11 +17,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
 
-    private static final String ID_NOT_FOUND_MESSAGE = "Stock with id %d not found";
-    private static final String NAME_NOT_FOUND_MESSAGE = "Stock with name '%s' not found";
+    private static final String STOCK_ID_NOT_FOUND_MESSAGE = "Stock with ID '%d' not found";
+    private static final String STOCK_NAME_NOT_FOUND_MESSAGE = "Stock with name '%s' not found";
 
     private final StockRepository stockRepository;
     private final StockMapper stockMapper;
+
 
     @Override
     public List<StockDto> getAllStocks() {
@@ -37,7 +38,7 @@ public class StockServiceImpl implements StockService {
 
         Stock stock = stockRepository.findById(id)
                 .filter(stk -> stk.getDeletedAt() == null)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(ID_NOT_FOUND_MESSAGE, id)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_ID_NOT_FOUND_MESSAGE, id)));
 
         return stockMapper.toDto(stock);
     }
@@ -46,14 +47,16 @@ public class StockServiceImpl implements StockService {
     public StockDto getStockByName(String name) {
 
         Stock stock = stockRepository.findByStockName(name)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(NAME_NOT_FOUND_MESSAGE, name)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_NAME_NOT_FOUND_MESSAGE, name)));
 
         return stockMapper.toDto(stock);
     }
 
     @Override
     @Transactional
-    public StockDto saveStock(Stock stock) {
+    public StockDto saveStock(StockDto stockDto) {
+
+        Stock stock = stockMapper.toEntity(stockDto);
 
         stock.setCreatedAt(LocalDateTime.now());
 
@@ -62,11 +65,30 @@ public class StockServiceImpl implements StockService {
 
     @Override
     @Transactional
-    public StockDto updateStock(Stock stock) {
+    public List<StockDto> saveAllStocks(List<StockDto> stockDtoList) {
 
-        stock.setUpdatedAt(LocalDateTime.now());
+        List<Stock> stocksList = stockMapper.toEntityList(stockDtoList);
 
-        return stockMapper.toDto(stockRepository.save(stock));
+        stocksList.forEach(stk -> stk.setCreatedAt(LocalDateTime.now()));
+
+        return stockMapper.toDtoList(stockRepository.saveAll(stocksList));
+    }
+
+    @Override
+    @Transactional
+    public StockDto updateStock(Long id, StockDto stockDto) {
+
+        Stock stock = stockRepository.findById(id)
+                .filter(stk -> stk.getDeletedAt() == null)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_ID_NOT_FOUND_MESSAGE, id)));
+
+        Stock updatedStock = stockMapper.toEntity(stockDto);
+
+        updatedStock.setId(id);
+        updatedStock.setCreatedAt(stock.getCreatedAt());
+        updatedStock.setUpdatedAt(LocalDateTime.now());
+
+        return stockMapper.toDto(stockRepository.save(updatedStock));
     }
 
     @Override
@@ -74,7 +96,8 @@ public class StockServiceImpl implements StockService {
     public void deleteStock(Long id) {
 
         Stock stock = stockRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(ID_NOT_FOUND_MESSAGE, id)));
+                .filter(stk -> stk.getDeletedAt() == null)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_ID_NOT_FOUND_MESSAGE, id)));
 
         stock.setDeletedAt(LocalDateTime.now());
 

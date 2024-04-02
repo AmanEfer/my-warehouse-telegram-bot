@@ -7,9 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +24,7 @@ import java.util.List;
 public class Product {
 
     @Id
-    @NotEmpty
+    @NotBlank
     @Column(name = "id", length = 6)
     private String article;
 
@@ -37,7 +35,7 @@ public class Product {
     private BigDecimal purchaseLastPrice;
 
     @Column(name = "sale_last_price")
-    private BigDecimal SaleLastPrice;
+    private BigDecimal saleLastPrice;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -50,6 +48,6 @@ public class Product {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
-    private List<ProductQuantity> quantities;
+    private List<ProductQuantity> quantityList;
 
 }
