@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @RestController
-@RequestMapping("/filesExport")
+@RequestMapping("/api/filesExport")
 public class MainController {
 
     public static final String FILE_NAME = "textExample.csv";
