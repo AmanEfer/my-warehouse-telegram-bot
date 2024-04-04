@@ -8,11 +8,13 @@ import com.amanefer.crud.models.Stock;
 import com.amanefer.crud.repositories.ProductRepository;
 import com.amanefer.crud.repositories.StockRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -31,20 +33,30 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public List<ProductDto> saveAllProducts(Long invoiceNumber, String stockName, List<ProductDto> productDtoList) {
+    public List<ProductDto> saveAllProducts(String stockName, List<ProductDto> productDtoList) {
 
         List<Product> products = productMapper.toEntityList(productDtoList);
 
-        Stock stock = stockRepository.findByStockName(stockName)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_NAME_NOT_FOUND_MESSAGE, stockName)));
-
-        products.forEach(prd -> {
-                    prd.setCreatedAt(LocalDateTime.now());
-                    for (ProductQuantity current : prd.getQuantityList()) {
-                        current.setStock(stock);
-                    }
-                }
-        );
+//        products.forEach(prd -> {
+//
+//            Optional<Product> maybeExistsProduct = productRepository.findById(prd.getArticle());
+//
+//            if (maybeExistsProduct.isPresent()) {
+//                Product updatedProduct = maybeExistsProduct.get();
+//
+//                updatedProduct.setDeletedAt(null);
+//                updatedProduct.setSaleLastPrice(prd.getSaleLastPrice());
+//
+//                updatedProduct.getQuantityList().stream()
+//                        .filter(qp -> qp.getStock().getStockName().equals(stockName))
+//                        .findFirst()
+//                        .ifPresentOrElse();
+//            }
+//
+//                    prd.setCreatedAt(LocalDateTime.now());
+//
+//                }
+//        );
 
         return productMapper.toDtoList(productRepository.saveAll(products));
     }
@@ -53,8 +65,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> getAllProducts() {
 
-        return productRepository.findAll().stream()
-                .filter(prd -> prd.getDeletedAt() == null)
+//        Page
+
+        return productRepository.findAllByDeletedAtIsNull().stream()
                 .map(productMapper::toDto)
                 .collect(Collectors.toList());
     }
@@ -119,4 +132,5 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.save(product);
     }
+
 }

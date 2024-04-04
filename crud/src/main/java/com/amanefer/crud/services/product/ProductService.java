@@ -14,7 +14,7 @@ public interface ProductService {
 
     ProductDto saveProduct(ProductDto productDto);
 
-    List<ProductDto> saveAllProducts(Long invoiceNumber, String stockName, List<ProductDto> productDtoList);
+    List<ProductDto> saveAllProducts(String stockName, List<ProductDto> productDtoList);
 
     ProductDto updateProduct(String id, ProductDto productDto);
 

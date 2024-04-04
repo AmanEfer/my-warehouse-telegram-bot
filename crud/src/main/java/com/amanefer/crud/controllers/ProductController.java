@@ -5,7 +5,6 @@ import com.amanefer.crud.services.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,7 +36,7 @@ public class ProductController {
 
         log.info("The goods arrived with the invoice No.{}", invoiceNumber);
 
-        return productService.saveAllProducts(invoiceNumber, stockName, productDtoList);
+        return productService.saveAllProducts(stockName, productDtoList);
     }
 
     @GetMapping("/all")
@@ -72,10 +71,11 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable("id") String id) {
+    public String deleteProduct(@PathVariable("id") String id) {
 
         productService.deleteProduct(id);
 
-        return new ResponseEntity<>(String.format(DELETE_PRODUCT_MESSAGE, id), HttpStatus.OK);
+        return String.format(DELETE_PRODUCT_MESSAGE, id);
     }
+
 }
