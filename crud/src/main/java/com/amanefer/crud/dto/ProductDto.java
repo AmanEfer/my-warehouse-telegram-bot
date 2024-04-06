@@ -13,4 +13,5 @@ public class ProductDto {
     private BigDecimal purchaseLastPrice;
     private BigDecimal saleLastPrice;
     private List<ProductQuantityDto> quantityList;
+    private Integer commonQuantity;
 }

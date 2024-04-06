@@ -1,25 +1,26 @@
 package com.amanefer.crud.mappers;
 
 import com.amanefer.crud.dto.ProductQuantityDto;
-import com.amanefer.crud.models.ProductQuantity;
+import com.amanefer.crud.entities.ProductQuantity;
+import com.amanefer.crud.models.ProductQuantityModel;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 @Mapper(componentModel = "spring", uses = StockMapper.class,
         injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-public interface ProductQuantityMapper extends BaseMapper<ProductQuantity, ProductQuantityDto> {
+public interface ProductQuantityMapper extends BaseMapper<ProductQuantityDto, ProductQuantityModel, ProductQuantity> {
+    @Override
+    ProductQuantityModel fromDtoToModel(ProductQuantityDto productQuantityDto);
 
     @Override
-    ProductQuantityDto toDto(ProductQuantity productQuantity);
+    ProductQuantity fromModelToEntity(ProductQuantityModel productQuantityModel);
 
     @Override
-    ProductQuantity toEntity(ProductQuantityDto productQuantityDto);
+    ProductQuantityModel fromEntityToModel(ProductQuantity productQuantity);
 
-    List<ProductQuantityDto> toDtoList(List<ProductQuantity> productQuantityList);
+    @Override
+    ProductQuantityDto fromModelToDto(ProductQuantityModel productQuantityModel);
 
-    List<ProductQuantity> toEntityList(List<ProductQuantityDto> productQuantityDtoList);
 }

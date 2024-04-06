@@ -1,6 +1,6 @@
 package com.amanefer.crud.services.user;
 
-import com.amanefer.crud.models.User;
+import com.amanefer.crud.entities.User;
 import com.amanefer.crud.dto.UserDto;
 
 import java.util.List;
@@ -11,12 +11,16 @@ public interface UserService {
 
     List<UserDto> getAllUsers();
 
-    Optional<User> getUser(Long id);
-    Optional<User> getUserByUsername(String username);
+    UserDto getUser(Long id);
+    UserDto getUserByUsername(String username);
 
-    UserDto saveUser(User person);
+    Optional<User> getUserByUsernameAsOptional(String username);
 
-    UserDto updateUser(User person);
+    UserDto saveUser(UserDto person);
+
+    User saveUserAsEntity(User user);
+
+    UserDto updateUser(UserDto person);
 
     void deleteUser(Long id);
 }

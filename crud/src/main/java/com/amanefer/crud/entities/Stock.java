@@ -1,4 +1,4 @@
-package com.amanefer.crud.models;
+package com.amanefer.crud.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

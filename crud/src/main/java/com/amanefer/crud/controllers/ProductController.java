@@ -46,15 +46,15 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ProductDto getProductById(@PathVariable("id") String id) {
+    public ProductDto getProductById(@PathVariable("id") String article) {
 
-        return productService.getProductById(id);
+        return productService.getProductByArticle(article);
     }
 
     @GetMapping
     public ProductDto getProductByName(@RequestParam("productName") String name) {
 
-        return productService.getProductByName(name);
+        return productService.getProductByTitle(name);
     }
 
     @PostMapping

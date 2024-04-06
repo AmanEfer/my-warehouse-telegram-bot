@@ -1,7 +1,8 @@
 package com.amanefer.crud.mappers;
 
 import com.amanefer.crud.dto.StockDto;
-import com.amanefer.crud.models.Stock;
+import com.amanefer.crud.entities.Stock;
+import com.amanefer.crud.models.StockModel;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
@@ -10,15 +11,26 @@ import java.util.List;
 
 @Component
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
-public interface StockMapper extends BaseMapper<Stock, StockDto> {
+public interface StockMapper extends BaseMapper<StockDto, StockModel, Stock> {
 
     @Override
-    StockDto toDto(Stock stock);
+    StockModel fromDtoToModel(StockDto stockDto);
 
     @Override
-    Stock toEntity(StockDto stockDto);
+    Stock fromModelToEntity(StockModel stockModel);
 
-    List<StockDto> toDtoList(List<Stock> stockList);
+    @Override
+    StockModel fromEntityToModel(Stock stock);
 
-    List<Stock> toEntityList(List<StockDto> stockDtoList);
+    @Override
+    StockDto fromModelToDto(StockModel stockModel);
+
+    List<StockModel> fromDtoToModelList(List<StockDto> dtoList);
+
+    List<Stock> fromModelToEntityList(List<StockModel> stockModelList);
+
+    List<StockModel> fromEntityToModelList(List<Stock> stockList);
+
+    List<StockDto> fromModelToDtoList(List<StockModel> stockModelListList);
+
 }

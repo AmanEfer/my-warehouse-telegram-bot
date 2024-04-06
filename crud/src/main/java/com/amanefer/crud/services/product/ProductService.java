@@ -8,9 +8,9 @@ public interface ProductService {
 
     List<ProductDto> getAllProducts();
 
-    ProductDto getProductById(String id);
+    ProductDto getProductByArticle(String article);
 
-    ProductDto getProductByName(String name);
+    ProductDto getProductByTitle(String title);
 
     ProductDto saveProduct(ProductDto productDto);
 

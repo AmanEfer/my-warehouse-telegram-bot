@@ -2,7 +2,7 @@ package com.amanefer.crud.services.stock;
 
 import com.amanefer.crud.dto.StockDto;
 import com.amanefer.crud.mappers.StockMapper;
-import com.amanefer.crud.models.Stock;
+import com.amanefer.crud.entities.Stock;
 import com.amanefer.crud.repositories.StockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,76 +27,73 @@ public class StockServiceImpl implements StockService {
     @Override
     public List<StockDto> getAllStocks() {
 
-        return stockRepository.findAll().stream()
-                .filter(stock -> stock.getDeletedAt() == null)
-                .map(stockMapper::toDto)
+        return stockRepository.findAllByDeletedAtIsNull().stream()
+                .map(stockMapper::fromEntityToModel)
+                .map(stockMapper::fromModelToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public StockDto getStockById(Long id) {
 
-        Stock stock = stockRepository.findById(id)
-                .filter(stk -> stk.getDeletedAt() == null)
+        Stock stock = stockRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_ID_NOT_FOUND_MESSAGE, id)));
 
-        return stockMapper.toDto(stock);
+        return stockMapper.fromModelToDto(stockMapper.fromEntityToModel(stock));
     }
 
     @Override
     public StockDto getStockByName(String name) {
 
-        Stock stock = stockRepository.findByStockName(name)
+        Stock stock = stockRepository.findByStockNameAndDeletedAtIsNull(name)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_NAME_NOT_FOUND_MESSAGE, name)));
 
-        return stockMapper.toDto(stock);
+        return stockMapper.fromModelToDto(stockMapper.fromEntityToModel(stock));
     }
 
     @Override
     @Transactional
     public StockDto saveStock(StockDto stockDto) {
 
-        Stock stock = stockMapper.toEntity(stockDto);
+        Stock stock = stockMapper.fromModelToEntity(stockMapper.fromDtoToModel(stockDto));
 
         stock.setCreatedAt(LocalDateTime.now());
 
-        return stockMapper.toDto(stockRepository.save(stock));
+        return stockMapper.fromModelToDto(stockMapper.fromEntityToModel(stockRepository.save(stock)));
     }
 
     @Override
     @Transactional
     public List<StockDto> saveAllStocks(List<StockDto> stockDtoList) {
 
-        List<Stock> stocksList = stockMapper.toEntityList(stockDtoList);
+        List<Stock> stocksList = stockMapper.fromModelToEntityList(stockMapper.fromDtoToModelList(stockDtoList));
 
         stocksList.forEach(stk -> stk.setCreatedAt(LocalDateTime.now()));
 
-        return stockMapper.toDtoList(stockRepository.saveAll(stocksList));
+        return stockMapper.fromModelToDtoList(stockMapper.fromEntityToModelList(stockRepository.saveAll(stocksList)));
     }
 
     @Override
     @Transactional
     public StockDto updateStock(Long id, StockDto stockDto) {
 
-        Stock stock = stockRepository.findById(id)
-                .filter(stk -> stk.getDeletedAt() == null)
+        Stock stock = stockRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_ID_NOT_FOUND_MESSAGE, id)));
 
-        Stock updatedStock = stockMapper.toEntity(stockDto);
+        Stock updatedStock = stockMapper.fromModelToEntity(stockMapper.fromDtoToModel(stockDto));
 
         updatedStock.setId(id);
         updatedStock.setCreatedAt(stock.getCreatedAt());
         updatedStock.setUpdatedAt(LocalDateTime.now());
 
-        return stockMapper.toDto(stockRepository.save(updatedStock));
+        return stockMapper.fromModelToDto(stockMapper.fromEntityToModel(stockRepository.save(updatedStock)));
     }
 
     @Override
     @Transactional
     public void deleteStock(Long id) {
 
-        Stock stock = stockRepository.findById(id)
-                .filter(stk -> stk.getDeletedAt() == null)
+        Stock stock = stockRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_ID_NOT_FOUND_MESSAGE, id)));
 
         stock.setDeletedAt(LocalDateTime.now());

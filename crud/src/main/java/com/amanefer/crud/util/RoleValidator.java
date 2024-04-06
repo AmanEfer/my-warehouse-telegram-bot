@@ -1,13 +1,14 @@
 package com.amanefer.crud.util;
 
-import com.amanefer.crud.models.Role;
-import com.amanefer.crud.models.User;
+import com.amanefer.crud.entities.Role;
+import com.amanefer.crud.entities.User;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RoleValidator {
 
     public User addRole(User user, String selectedRole) {
+
         if (!validate(user, selectedRole)) {
             user.getRole().add(new Role(selectedRole));
         }
@@ -16,8 +17,10 @@ public class RoleValidator {
     }
 
     private boolean validate(User user, String checkingRole) {
+
         return user.getRole().stream()
                 .map(Role::getName)
                 .anyMatch(roleName -> roleName.equalsIgnoreCase(checkingRole));
     }
+
 }
