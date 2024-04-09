@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +68,59 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepository.saveAll(productMapper.fromModelToEntityList(models));
 
         return productMapper.fromModelToDtoList(productMapper.fromEntityToModelList(products));
+    }
+
+    @Override
+    @Transactional
+    public List<ProductDto> saleProducts(String stockName, List<ProductDto> productDtoList) {
+
+        if (stockRepository.findByStockNameAndDeletedAtIsNull(stockName).isEmpty()) {
+            throw new IllegalArgumentException(String.format(STOCK_NAME_NOT_FOUND_MESSAGE, stockName));
+        }
+
+        List<ProductDto> soldProducts = new ArrayList<>();
+
+        for (ProductDto dto : productDtoList) {
+
+            productRepository.findByTitle(dto.getTitle()).ifPresent(
+                    product -> {
+                        product.getQuantityList().stream()
+                                .filter(pq -> pq.getStock().getStockName().equals(stockName))
+                                .findFirst()
+                                .ifPresent(
+                                        productQuantity -> {
+
+                                            product.setSaleLastPrice(dto.getSaleLastPrice());
+                                            product.setUpdatedAt(LocalDateTime.now());
+
+                                            BigDecimal gain;
+                                            int diff = productQuantity.getQuantity() - dto.getCommonQuantity();
+
+                                            if (diff > 0) {
+                                                gain = dto.getSaleLastPrice()
+                                                        .multiply(BigDecimal.valueOf(dto.getCommonQuantity()));
+
+                                                productQuantity.setQuantity(diff);
+
+                                            } else {
+                                                gain = dto.getSaleLastPrice()
+                                                        .multiply(BigDecimal.valueOf(productQuantity.getQuantity()));
+
+                                                product.getQuantityList().remove(productQuantity);
+                                            }
+
+                                            ProductDto productDto = productMapper.fromModelToDto(
+                                                    productMapper.fromEntityToModel(product));
+
+                                            productDto.setGain(gain.setScale(2, RoundingMode.HALF_UP));
+
+                                            soldProducts.add(productDto);
+                                        }
+                                );
+                    }
+            );
+        }
+        return soldProducts;
     }
 
     @Override

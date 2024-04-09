@@ -39,6 +39,16 @@ public class ProductController {
         return productService.saveAllProducts(stockName, productDtoList);
     }
 
+    @PatchMapping("/sale")
+    public List<ProductDto> saleProducts(@RequestParam("invoiceNumber") Long invoiceNumber,
+                                         @RequestParam("stockName") String stockName,
+                                         @RequestBody List<ProductDto> productDtoList) {
+
+        log.info("List of products for sale with invoice No.{}", invoiceNumber);
+
+        return productService.saleProducts(stockName, productDtoList);
+    }
+
     @GetMapping("/all")
     public List<ProductDto> getAllProducts() {
 

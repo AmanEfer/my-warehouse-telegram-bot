@@ -15,6 +15,8 @@ public interface ProductService {
 
     List<ProductDto> saveAllProducts(String stockName, List<ProductDto> productDtoList);
 
+    List<ProductDto> saleProducts(String stockName, List<ProductDto> productDtoList);
+
     ProductModel saveProductAsModel(ProductDto productDto);
 
     ProductDto saveProductAsDto(ProductDto productDto);
@@ -24,5 +26,4 @@ public interface ProductService {
     void softDeleteProductByArticle(String id);
 
     void hardDeleteProductByArticle(String id);
-
 }
