@@ -43,7 +43,7 @@ create table if not exists my_db_bot.product_quantity
     id bigserial constraint product_quantity_id_pkey primary key,
     product_id varchar(6) not null references my_db_bot.product (id),
     stock_id bigint not null references my_db_bot.stock (id),
-    quantity int,
+    quantity int default 0,
     constraint product_quantity_check_quantity_value check (quantity >= 0),
-    constraint product_quantity_pkey primary key (product_id, stock_id)
+    constraint product_quantity_pkey unique (product_id, stock_id)
 );

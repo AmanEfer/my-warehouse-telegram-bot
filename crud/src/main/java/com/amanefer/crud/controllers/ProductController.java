@@ -61,7 +61,7 @@ public class ProductController {
     @ResponseStatus(HttpStatus.CREATED)
     public ProductDto saveProduct(@RequestBody ProductDto productDto) {
 
-        return productService.saveProduct(productDto);
+        return productService.saveProductAsDto(productDto);
     }
 
     @PatchMapping("/{id}")
@@ -71,9 +71,17 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteProduct(@PathVariable("id") String id) {
+    public String softDeleteProduct(@PathVariable("id") String id) {
 
-        productService.deleteProduct(id);
+        productService.softDeleteProductByArticle(id);
+
+        return String.format(DELETE_PRODUCT_MESSAGE, id);
+    }
+
+    @DeleteMapping("/hard/{id}")
+    public String hardDeleteProduct(@PathVariable("id") String id) {
+
+        productService.hardDeleteProductByArticle(id);
 
         return String.format(DELETE_PRODUCT_MESSAGE, id);
     }

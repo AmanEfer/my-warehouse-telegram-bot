@@ -1,6 +1,7 @@
 package com.amanefer.crud.services.product;
 
 import com.amanefer.crud.dto.ProductDto;
+import com.amanefer.crud.models.ProductModel;
 
 import java.util.List;
 
@@ -12,11 +13,16 @@ public interface ProductService {
 
     ProductDto getProductByTitle(String title);
 
-    ProductDto saveProduct(ProductDto productDto);
-
     List<ProductDto> saveAllProducts(String stockName, List<ProductDto> productDtoList);
+
+    ProductModel saveProductAsModel(ProductDto productDto);
+
+    ProductDto saveProductAsDto(ProductDto productDto);
 
     ProductDto updateProduct(String id, ProductDto productDto);
 
-    void deleteProduct(String id);
+    void softDeleteProductByArticle(String id);
+
+    void hardDeleteProductByArticle(String id);
+
 }

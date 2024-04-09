@@ -29,7 +29,7 @@ public class Product {
     @Column(length = 128, nullable = false, unique = true)
     private String title;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "product_id")
     private List<ProductQuantity> quantityList;
 

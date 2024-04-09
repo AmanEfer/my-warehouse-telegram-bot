@@ -7,6 +7,8 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @Mapper(componentModel = "spring", uses = ProductQuantityMapper.class,
         injectionStrategy = InjectionStrategy.CONSTRUCTOR)
@@ -23,5 +25,11 @@ public interface ProductMapper extends BaseMapper<ProductDto, ProductModel, Prod
 
     @Override
     ProductDto fromModelToDto(ProductModel productModel);
+
+    List<Product> fromModelToEntityList(List<ProductModel> productModelList);
+
+    List<ProductModel> fromEntityToModelList(List<Product> productList);
+
+    List<ProductDto> fromModelToDtoList(List<ProductModel> productModelList);
 
 }

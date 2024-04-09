@@ -65,10 +65,10 @@ public class StockController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteStock(@PathVariable("id") Long id) {
+    public String deleteStock(@PathVariable("id") Long id) {
 
         stockService.deleteStock(id);
 
-        return new ResponseEntity<>(String.format(DELETE_STOCK_MESSAGE, id), HttpStatus.OK);
+        return String.format(DELETE_STOCK_MESSAGE, id);
     }
 }
