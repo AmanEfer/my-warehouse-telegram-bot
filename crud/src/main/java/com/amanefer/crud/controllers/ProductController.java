@@ -49,6 +49,17 @@ public class ProductController {
         return productService.saleProducts(stockName, productDtoList);
     }
 
+    @PatchMapping("/move")
+    public List<ProductDto> moveProducts(@RequestParam("invoiceNumber") String invoiceNumber,
+                                         @RequestParam("stockNameFrom") String stockNameFrom,
+                                         @RequestParam("stockNameTo") String stockNameTo,
+                                         @RequestBody List<ProductDto> productDtoList) {
+
+        log.info("List of products for move with invoice No.{}", invoiceNumber);
+
+        return productService.moveProducts(stockNameFrom, stockNameTo, productDtoList);
+    }
+
     @GetMapping("/all")
     public List<ProductDto> getAllProducts() {
 

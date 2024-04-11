@@ -26,4 +26,6 @@ public interface ProductService {
     void softDeleteProductByArticle(String id);
 
     void hardDeleteProductByArticle(String id);
+
+    List<ProductDto> moveProducts(String stockNameFrom, String stockNameTo, List<ProductDto> productDtoList);
 }

@@ -125,6 +125,61 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    public List<ProductDto> moveProducts(String stockNameFrom, String stockNameTo, List<ProductDto> productDtoList) {
+
+        if (stockRepository.findByStockNameAndDeletedAtIsNull(stockNameFrom).isEmpty()) {
+            throw new IllegalArgumentException(String.format(STOCK_NAME_NOT_FOUND_MESSAGE, stockNameFrom));
+        }
+
+        StockModel stockModel = stockMapper.fromEntityToModel(
+                stockRepository.findByStockNameAndDeletedAtIsNull(stockNameTo).orElseThrow(
+                        () -> new IllegalArgumentException(String.format(STOCK_NAME_NOT_FOUND_MESSAGE, stockNameTo))));
+
+        List<ProductDto> movedProducts = new ArrayList<>();
+
+        for (ProductDto dto : productDtoList) {
+
+            productRepository.findByTitleAndDeletedAtIsNull(dto.getTitle()).ifPresent(
+                    product -> {
+                        product.getQuantityList().stream()
+                                .filter(qp -> qp.getStock().getStockName().equals(stockNameFrom))
+                                .findFirst()
+                                .ifPresent(
+                                        productQuantityFrom -> {
+                                            ProductQuantity productQuantityTo = product.getQuantityList().stream()
+                                                    .filter(q -> q.getStock().getStockName().equals(stockNameTo))
+                                                    .findFirst()
+                                                    .orElse(new ProductQuantity(
+                                                            stockMapper.fromModelToEntity(stockModel), 0));
+
+                                            int diff = productQuantityFrom.getQuantity() - dto.getCommonQuantity();
+
+                                            if (diff > 0) {
+                                                productQuantityFrom.setQuantity(diff);
+                                                productQuantityTo.setQuantity(productQuantityTo.getQuantity() + dto.getCommonQuantity());
+
+                                            } else {
+                                                productQuantityTo.setQuantity(productQuantityTo.getQuantity() + productQuantityFrom.getQuantity());
+                                                product.getQuantityList().remove(productQuantityFrom);
+                                            }
+
+                                            product.setUpdatedAt(LocalDateTime.now());
+                                            product.getQuantityList().add(productQuantityTo);
+
+                                            ProductDto productDto = productMapper.fromModelToDto(
+                                                    productMapper.fromEntityToModel(product));
+
+                                            movedProducts.add(productDto);
+                                        }
+                                );
+                    }
+            );
+        }
+        return movedProducts;
+    }
+
+    @Override
+    @Transactional
     public ProductModel saveProductAsModel(ProductDto productDto) {
 
         productRepository.findByTitle(productDto.getTitle()).ifPresentOrElse(
