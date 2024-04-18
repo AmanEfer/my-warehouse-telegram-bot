@@ -1,5 +1,6 @@
 package com.amanefer.telegram.services;
 
+import com.amanefer.telegram.dto.StockDto;
 import com.amanefer.telegram.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -21,6 +22,7 @@ public class RestToCrud {
     public static final String URI_GET_USER = "http://localhost:8080/api/crud/users/%s";
     public static final String URI_REGISTER_NEW_USER = "http://localhost:8080/api/crud/users?selectedRole=%s";
     public static final String URI_FILES_EXPORT = "http://localhost:8082/api/filesExport";
+    public static final String URI_SAVE_STOCK = "http://localhost:8080/api/crud/stocks";
 
     private final RestTemplate restTemplate;
 
@@ -52,6 +54,16 @@ public class RestToCrud {
     public byte[] exportFile() {
 
         return restTemplate.getForEntity(URI_FILES_EXPORT, byte[].class).getBody();
+    }
+
+    public StockDto saveNewStock(StockDto stockDto) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<StockDto> request = new HttpEntity<>(stockDto, headers);
+
+        return restTemplate.postForEntity(URI_SAVE_STOCK, request, StockDto.class).getBody();
     }
 
 }

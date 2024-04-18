@@ -1,10 +1,12 @@
 package com.amanefer.telegram.services;
 
 import com.amanefer.telegram.commands.Command;
-import com.amanefer.telegram.config.BotConfig;
+import com.amanefer.telegram.commands.TelegramCommands;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
@@ -17,7 +19,6 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -26,23 +27,27 @@ import java.util.List;
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
 
-    public static final String START_COMMAND = "/start";
-    public static final String REGISTER_COMMAND = "/register";
-    public static final String EXPORT_COMMAND = "/export";
     public static final String DEFAULT_MESSAGE_TEXT = "Sorry, command wasn't recognize";
 
-    private final BotConfig botConfig;
+    private final String botName;
     private final List<Command> commands;
+    private final TelegramCommands telegramCommands;
 
-    public TelegramBot(BotConfig botConfig, List<Command> commands) {
+    public TelegramBot(@Value("${bot.token}") String botToken,
+                       @Value("${bot.name}") String botName,
+                       List<Command> commands,
+                       TelegramCommands telegramCommands) {
 
-        this.botConfig = botConfig;
+        super(botToken);
+        this.botName = botName;
         this.commands = commands;
+        this.telegramCommands = telegramCommands;
+    }
 
-        List<BotCommand> listOfCommands = new ArrayList<>();
-        listOfCommands.add(new BotCommand(START_COMMAND, "start of application"));
-        listOfCommands.add(new BotCommand(REGISTER_COMMAND, "to register a new user"));
-        listOfCommands.add(new BotCommand(EXPORT_COMMAND, "export some file"));
+    @PostConstruct
+    public void init() {
+
+        List<BotCommand> listOfCommands = telegramCommands.getListOfCommands();
 
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
@@ -57,6 +62,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
+
             String messageText = update.getMessage().getText();
             long chatId = update.getMessage().getChatId();
 
@@ -96,13 +102,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public String getBotUsername() {
 
-        return botConfig.getBotName();
-    }
-
-    @Override
-    public String getBotToken() {
-
-        return botConfig.getBotToken();
+        return botName;
     }
 
 }

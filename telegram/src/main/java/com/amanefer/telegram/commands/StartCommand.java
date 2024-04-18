@@ -1,23 +1,40 @@
 package com.amanefer.telegram.commands;
 
+import com.amanefer.telegram.dto.UserDto;
+import com.amanefer.telegram.services.RestToCrud;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class StartCommand implements Command {
 
+    public static final String ROLE_USER = "ROLE_USER";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String START_COMMAND = "/start";
-    public static final String REGISTER_NEW_USER_COMMAND = "register new user";
-    public static final String EXPORT_COMMAND = "export";
-    public static final String GET_ALL_USERS_COMMAND = "get all users";
-    public static final String GET_MY_DATA_COMMAND = "get my data";
-    private static final String MESSAGE_TEXT = "Hi, %s, nice to meet you!";
+    public static final String USERS_COMMAND = "users";
+    public static final String STOCKS_COMMAND = "stocks";
+    public static final String PRODUCTS_COMMAND = "products";
+    public static final String HELP_COMMAND = "help";
+    private static final String MESSAGE_TEXT = """
+            Hi, %s, nice to meet you!
+                        
+            Choose your next action:
+            """;
+
+    @Value("${bot.admin}")
+    private long adminId;
+
+    private final RestToCrud rest;
 
 
     @Override
@@ -29,39 +46,64 @@ public class StartCommand implements Command {
     @Override
     public SendMessage process(Message msg) {
 
+        long userId = msg.getFrom().getId();
         long chatId = msg.getChatId();
-        String firstName = msg.getChat().getUserName();
+        String userName = msg.getChat().getUserName();
 
-        String answer = String.format(MESSAGE_TEXT, firstName);
+        String answer = String.format(MESSAGE_TEXT, userName);
 
-        return createReplyKeyboardMarkup(chatId, answer);
+        registerUser(userId, userName);
+
+        return createStartMessageWithKeyboard(chatId, answer);
     }
 
-    private SendMessage createReplyKeyboardMarkup(long chatId, String textToSend) {
-        
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(textToSend);
+    private void registerUser(long userId, String userName) {
 
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-        List<KeyboardRow> keyboardRows = new ArrayList<>();
+        UserDto user = UserDto.builder()
+                .id(userId)
+                .username(userName)
+                .build();
+
+        rest.registerNewUser(user, userId == adminId ? ROLE_ADMIN : ROLE_USER);
+    }
+
+    private SendMessage createStartMessageWithKeyboard(long chatId, String textToSend) {
+
+        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
+
+        replyKeyboardMarkup.setSelective(true);
+        replyKeyboardMarkup.setResizeKeyboard(true);
+        replyKeyboardMarkup.setOneTimeKeyboard(true);
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+
         KeyboardRow row = new KeyboardRow();
-
-        row.add(REGISTER_NEW_USER_COMMAND);
-        row.add(EXPORT_COMMAND);
-
-        keyboardRows.add(row);
+        row.add(new KeyboardButton(USERS_COMMAND));
+        keyboard.add(row);
 
         row = new KeyboardRow();
+        row.add(new KeyboardButton(STOCKS_COMMAND));
+        keyboard.add(row);
 
-        row.add(GET_ALL_USERS_COMMAND);
-        row.add(GET_MY_DATA_COMMAND);
+        row = new KeyboardRow();
+        row.add(new KeyboardButton(PRODUCTS_COMMAND));
+        keyboard.add(row);
 
-        keyboardRows.add(row);
-        keyboardMarkup.setKeyboard(keyboardRows);
-        message.setReplyMarkup(keyboardMarkup);
+        row = new KeyboardRow();
+        row.add(new KeyboardButton("export file"));
+        keyboard.add(row);
 
-        return message;
+        row = new KeyboardRow();
+        row.add(new KeyboardButton(HELP_COMMAND));
+        keyboard.add(row);
+
+        replyKeyboardMarkup.setKeyboard(keyboard);
+
+        return SendMessage.builder()
+                .chatId(chatId)
+                .text(textToSend)
+                .replyMarkup(replyKeyboardMarkup)
+                .build();
     }
-    
+
 }
