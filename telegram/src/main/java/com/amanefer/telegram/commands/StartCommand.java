@@ -1,7 +1,9 @@
 package com.amanefer.telegram.commands;
 
+import com.amanefer.telegram.cache.StatesCache;
 import com.amanefer.telegram.dto.UserDto;
 import com.amanefer.telegram.services.RestToCrud;
+import com.amanefer.telegram.state.BotState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -35,6 +37,7 @@ public class StartCommand implements Command {
     private long adminId;
 
     private final RestToCrud rest;
+    private final StatesCache statesCache;
 
 
     @Override
@@ -53,6 +56,8 @@ public class StartCommand implements Command {
         String answer = String.format(MESSAGE_TEXT, userName);
 
         registerUser(userId, userName);
+
+        statesCache.setUserStateCache(userId, BotState.PRIMARY);
 
         return createStartMessageWithKeyboard(chatId, answer);
     }

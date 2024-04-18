@@ -17,15 +17,7 @@ import java.util.Set;
 public class UserDto {
     private long id;
     private String username;
-    private BotState botState;
     private Set<RoleDto> roles = new HashSet<>();
-
-
-    public UserDto(long id, String username, Set<RoleDto> roles) {
-        this.id = id;
-        this.username = username;
-        this.roles = roles;
-    }
 
 
     @Override
