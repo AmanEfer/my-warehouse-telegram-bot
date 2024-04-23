@@ -40,7 +40,7 @@ public class ProductController {
     }
 
     @PatchMapping("/sale")
-    public List<ProductDto> saleProducts(@RequestParam("invoiceNumber") Long invoiceNumber,
+    public List<ProductDto> sellProducts(@RequestParam("invoiceNumber") Long invoiceNumber,
                                          @RequestParam("stockName") String stockName,
                                          @RequestBody List<ProductDto> productDtoList) {
 

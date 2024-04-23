@@ -30,9 +30,4 @@ public class Stock {
 
     private LocalDateTime deletedAt;
 
-
-    public Stock(String stockName) {
-        this.stockName = stockName;
-    }
-
 }

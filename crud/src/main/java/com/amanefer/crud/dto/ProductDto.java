@@ -16,9 +16,9 @@ public class ProductDto {
 
     private String article;
     private String title;
+    private List<ProductQuantityDto> quantityList;
     private BigDecimal purchaseLastPrice;
     private BigDecimal saleLastPrice;
-    private List<ProductQuantityDto> quantityList;
     private Integer commonQuantity;
     private BigDecimal gain;
 }

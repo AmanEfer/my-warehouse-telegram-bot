@@ -1,14 +1,15 @@
 package com.amanefer.telegram.commands;
 
-import com.amanefer.telegram.cache.StatesCache;
+import com.amanefer.telegram.util.Button;
+import com.amanefer.telegram.cache.UserStateCache;
 import com.amanefer.telegram.dto.UserDto;
 import com.amanefer.telegram.services.RestToCrud;
-import com.amanefer.telegram.state.BotState;
+import com.amanefer.telegram.util.BotState;
+import com.amanefer.telegram.util.UpdateTransferData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
@@ -22,11 +23,6 @@ public class StartCommand implements Command {
 
     public static final String ROLE_USER = "ROLE_USER";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
-    public static final String START_COMMAND = "/start";
-    public static final String USERS_COMMAND = "users";
-    public static final String STOCKS_COMMAND = "stocks";
-    public static final String PRODUCTS_COMMAND = "products";
-    public static final String HELP_COMMAND = "help";
     private static final String MESSAGE_TEXT = """
             Hi, %s, nice to meet you!
                         
@@ -37,32 +33,23 @@ public class StartCommand implements Command {
     private long adminId;
 
     private final RestToCrud rest;
-    private final StatesCache statesCache;
+    private final UserStateCache userStateCache;
 
 
     @Override
     public boolean support(String command) {
 
-        return command.equalsIgnoreCase(START_COMMAND);
+        return command.equals(Button.START_BUTTON.getMenuName())
+                || command.equals(Button.START_BUTTON.getKeyboardName());
     }
 
     @Override
-    public SendMessage process(Message msg) {
+    public SendMessage process(UpdateTransferData updateTransferData) {
 
-        long userId = msg.getFrom().getId();
-        long chatId = msg.getChatId();
-        String userName = msg.getChat().getUserName();
-
+        long chatId = updateTransferData.getChatId();
+        long userId = updateTransferData.getUserId();
+        String userName = updateTransferData.getUserName();
         String answer = String.format(MESSAGE_TEXT, userName);
-
-        registerUser(userId, userName);
-
-        statesCache.setUserStateCache(userId, BotState.PRIMARY);
-
-        return createStartMessageWithKeyboard(chatId, answer);
-    }
-
-    private void registerUser(long userId, String userName) {
 
         UserDto user = UserDto.builder()
                 .id(userId)
@@ -70,6 +57,10 @@ public class StartCommand implements Command {
                 .build();
 
         rest.registerNewUser(user, userId == adminId ? ROLE_ADMIN : ROLE_USER);
+
+        userStateCache.putInCache(userId, BotState.PRIMARY);
+
+        return createStartMessageWithKeyboard(chatId, answer);
     }
 
     private SendMessage createStartMessageWithKeyboard(long chatId, String textToSend) {
@@ -83,23 +74,17 @@ public class StartCommand implements Command {
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
-        row.add(new KeyboardButton(USERS_COMMAND));
+        row.add(new KeyboardButton(Button.STOCKS_BUTTON.getKeyboardName()));
+        row.add(new KeyboardButton(Button.PRODUCTS_BUTTON.getKeyboardName()));
         keyboard.add(row);
 
         row = new KeyboardRow();
-        row.add(new KeyboardButton(STOCKS_COMMAND));
+        row.add(new KeyboardButton(Button.USERS_BUTTON.getKeyboardName()));
+        row.add(new KeyboardButton(Button.REPORTS_BUTTON.getKeyboardName()));
         keyboard.add(row);
 
         row = new KeyboardRow();
-        row.add(new KeyboardButton(PRODUCTS_COMMAND));
-        keyboard.add(row);
-
-        row = new KeyboardRow();
-        row.add(new KeyboardButton("export file"));
-        keyboard.add(row);
-
-        row = new KeyboardRow();
-        row.add(new KeyboardButton(HELP_COMMAND));
+        row.add(new KeyboardButton(Button.HELP_BUTTON.getKeyboardName()));
         keyboard.add(row);
 
         replyKeyboardMarkup.setKeyboard(keyboard);

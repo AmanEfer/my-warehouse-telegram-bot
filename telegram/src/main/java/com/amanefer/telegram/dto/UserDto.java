@@ -1,13 +1,11 @@
 package com.amanefer.telegram.dto;
 
-import com.amanefer.telegram.state.BotState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Data
@@ -17,13 +15,13 @@ import java.util.Set;
 public class UserDto {
     private long id;
     private String username;
-    private Set<RoleDto> roles = new HashSet<>();
+    private Set<RoleDto> role = new HashSet<>();
 
 
     @Override
     public String toString() {
 
-        String role = roles.stream()
+        String role = this.role.stream()
                 .findFirst()
                 .map(roleDto -> roleDto.getName().replace("ROLE_", "").toLowerCase())
                 .orElse("not assigned");

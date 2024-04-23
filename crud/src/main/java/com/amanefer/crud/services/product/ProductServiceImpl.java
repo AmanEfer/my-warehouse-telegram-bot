@@ -82,7 +82,7 @@ public class ProductServiceImpl implements ProductService {
 
         for (ProductDto dto : productDtoList) {
 
-            productRepository.findByTitle(dto.getTitle()).ifPresent(
+            productRepository.findById(dto.getArticle()).ifPresent(
                     product -> {
                         product.getQuantityList().stream()
                                 .filter(pq -> pq.getStock().getStockName().equals(stockName))
@@ -139,7 +139,7 @@ public class ProductServiceImpl implements ProductService {
 
         for (ProductDto dto : productDtoList) {
 
-            productRepository.findByTitleAndDeletedAtIsNull(dto.getTitle()).ifPresent(
+            productRepository.findByArticleAndDeletedAtIsNull(dto.getArticle()).ifPresent(
                     product -> {
                         product.getQuantityList().stream()
                                 .filter(qp -> qp.getStock().getStockName().equals(stockNameFrom))
@@ -182,7 +182,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductModel saveProductAsModel(ProductDto productDto) {
 
-        productRepository.findByTitle(productDto.getTitle()).ifPresentOrElse(
+        productRepository.findById(productDto.getArticle()).ifPresentOrElse(
                 existsProduct -> {
                     if (existsProduct.getDeletedAt() != null) {
                         existsProduct.setDeletedAt(null);
@@ -198,7 +198,7 @@ public class ProductServiceImpl implements ProductService {
                 }
         );
 
-        return productMapper.fromEntityToModel(productRepository.findByTitle(productDto.getTitle()).get());
+        return productMapper.fromEntityToModel(productRepository.findById(productDto.getArticle()).get());
     }
 
     @Override
