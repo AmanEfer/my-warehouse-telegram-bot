@@ -1,9 +1,9 @@
-package com.amanefer.crud.dto;
+package com.amanefer.crud.models;
 
 import lombok.Data;
 
 @Data
-public class RoleDto {
+public class RoleModel {
 
     private Long id;
     private String name;

@@ -17,10 +17,10 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class RestToCrud {
 
-    public static final String URI_GET_USERS = "http://localhost:8080/crud";
-    public static final String URI_GET_USER = "http://localhost:8080/crud/%s";
-    public static final String URI_REGISTER_NEW_USER = "http://localhost:8080/crud/new?selectedRole=%s";
-    public static final String URI_FILES_EXPORT = "http://localhost:8082/filesExport";
+    public static final String URI_GET_USERS = "http://localhost:8080/api/crud/users";
+    public static final String URI_GET_USER = "http://localhost:8080/api/crud/users/%s";
+    public static final String URI_REGISTER_NEW_USER = "http://localhost:8080/api/crud/users?selectedRole=%s";
+    public static final String URI_FILES_EXPORT = "http://localhost:8082/api/filesExport";
 
     private final RestTemplate restTemplate;
 

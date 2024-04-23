@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:latest:///my_db
+    username: postgres
+    password: postgres

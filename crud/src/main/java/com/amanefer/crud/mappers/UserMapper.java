@@ -1,17 +1,26 @@
 package com.amanefer.crud.mappers;
 
+import com.amanefer.crud.dto.UserDto;
+import com.amanefer.crud.entities.User;
+import com.amanefer.crud.models.UserModel;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.springframework.stereotype.Component;
-import com.amanefer.crud.dto.UserDto;
-import com.amanefer.crud.models.User;
 
 @Component
-@Mapper(componentModel = "spring")
-public interface UserMapper extends MyMapper<User, UserDto> {
+@Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+public interface UserMapper extends BaseMapper<UserDto, UserModel, User> {
 
     @Override
-    UserDto toDto(User user);
+    UserModel fromDtoToModel(UserDto userDto);
 
     @Override
-    User toUser(UserDto userDto);
+    User fromModelToEntity(UserModel userModel);
+
+    @Override
+    UserModel fromEntityToModel(User user);
+
+    @Override
+    UserDto fromModelToDto(UserModel userModel);
+
 }

@@ -3,8 +3,8 @@ package com.amanefer.crud.dto;
 import lombok.Data;
 
 @Data
-public class RoleDto {
+public class StockDto {
 
     private Long id;
-    private String name;
+    private String stockName;
 }

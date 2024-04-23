@@ -1,6 +1,6 @@
 package com.amanefer.crud.repositories;
 
-import com.amanefer.crud.models.User;
+import com.amanefer.crud.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
