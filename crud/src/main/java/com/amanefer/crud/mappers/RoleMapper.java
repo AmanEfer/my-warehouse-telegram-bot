@@ -23,4 +23,10 @@ public interface RoleMapper extends BaseMapper<RoleDto, RoleModel, Role> {
     @Override
     RoleDto fromModelToDto(RoleModel roleModel);
 
+    @Override
+    RoleDto fromEntityToDto(Role role);
+
+    @Override
+    Role fromDtoToEntity(RoleDto roleDto);
+
 }

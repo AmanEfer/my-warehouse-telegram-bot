@@ -25,12 +25,10 @@ public interface StockMapper extends BaseMapper<StockDto, StockModel, Stock> {
     @Override
     StockDto fromModelToDto(StockModel stockModel);
 
-    List<StockModel> fromDtoToModelList(List<StockDto> dtoList);
+    @Override
+    StockDto fromEntityToDto(Stock stock);
 
-    List<Stock> fromModelToEntityList(List<StockModel> stockModelList);
-
-    List<StockModel> fromEntityToModelList(List<Stock> stockList);
-
-    List<StockDto> fromModelToDtoList(List<StockModel> stockModelListList);
+    @Override
+    Stock fromDtoToEntity(StockDto stockDto);
 
 }

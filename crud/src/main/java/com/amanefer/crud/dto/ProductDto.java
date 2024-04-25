@@ -21,4 +21,6 @@ public class ProductDto {
     private BigDecimal saleLastPrice;
     private Integer commonQuantity;
     private BigDecimal gain;
+    private boolean archived;
+
 }

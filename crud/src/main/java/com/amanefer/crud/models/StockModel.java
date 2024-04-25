@@ -12,4 +12,5 @@ public class StockModel {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;
+    private boolean archived;
 }

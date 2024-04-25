@@ -23,4 +23,10 @@ public interface UserMapper extends BaseMapper<UserDto, UserModel, User> {
     @Override
     UserDto fromModelToDto(UserModel userModel);
 
+    @Override
+    UserDto fromEntityToDto(User user);
+
+    @Override
+    User fromDtoToEntity(UserDto dto);
+
 }

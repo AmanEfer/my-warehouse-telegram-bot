@@ -28,8 +28,7 @@ public class StockServiceImpl implements StockService {
     public List<StockDto> getAllStocks() {
 
         return stockRepository.findAllByDeletedAtIsNull().stream()
-                .map(stockMapper::fromEntityToModel)
-                .map(stockMapper::fromModelToDto)
+                .map(stockMapper::fromEntityToDto)
                 .collect(Collectors.toList());
     }
 
@@ -39,7 +38,7 @@ public class StockServiceImpl implements StockService {
         Stock stock = stockRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_ID_NOT_FOUND_MESSAGE, id)));
 
-        return stockMapper.fromModelToDto(stockMapper.fromEntityToModel(stock));
+        return stockMapper.fromEntityToDto(stock);
     }
 
     @Override
@@ -48,29 +47,44 @@ public class StockServiceImpl implements StockService {
         Stock stock = stockRepository.findByStockNameAndDeletedAtIsNull(name)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_NAME_NOT_FOUND_MESSAGE, name)));
 
-        return stockMapper.fromModelToDto(stockMapper.fromEntityToModel(stock));
+        return stockMapper.fromEntityToDto(stock);
     }
 
     @Override
     @Transactional
     public StockDto saveStock(StockDto stockDto) {
 
-        Stock stock = stockMapper.fromModelToEntity(stockMapper.fromDtoToModel(stockDto));
+        String stockName = stockDto.getStockName();
 
-        stock.setCreatedAt(LocalDateTime.now());
+        stockRepository.findByStockName(stockName)
+                .ifPresentOrElse(
+                        existsStock -> {
+                            if (existsStock.getDeletedAt() != null) {
+                                existsStock.setDeletedAt(null);
+                                existsStock.setUpdatedAt(LocalDateTime.now());
+                            }
+                        },
 
-        return stockMapper.fromModelToDto(stockMapper.fromEntityToModel(stockRepository.save(stock)));
+                        () -> {
+                            Stock savedStock = stockMapper.fromDtoToEntity(stockDto);
+                            savedStock.setCreatedAt(LocalDateTime.now());
+
+                            stockRepository.save(savedStock);
+                        }
+                );
+
+        return stockMapper.fromEntityToDto(stockRepository.findByStockName(stockName)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        String.format(STOCK_NAME_NOT_FOUND_MESSAGE, stockName))));
     }
 
     @Override
     @Transactional
     public List<StockDto> saveAllStocks(List<StockDto> stockDtoList) {
 
-        List<Stock> stocksList = stockMapper.fromModelToEntityList(stockMapper.fromDtoToModelList(stockDtoList));
-
-        stocksList.forEach(stk -> stk.setCreatedAt(LocalDateTime.now()));
-
-        return stockMapper.fromModelToDtoList(stockMapper.fromEntityToModelList(stockRepository.saveAll(stocksList)));
+        return stockDtoList.stream()
+                .map(this::saveStock)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -80,18 +94,18 @@ public class StockServiceImpl implements StockService {
         Stock stock = stockRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_ID_NOT_FOUND_MESSAGE, id)));
 
-        Stock updatedStock = stockMapper.fromModelToEntity(stockMapper.fromDtoToModel(stockDto));
+        Stock updatedStock = stockMapper.fromDtoToEntity(stockDto);
 
         updatedStock.setId(id);
         updatedStock.setCreatedAt(stock.getCreatedAt());
         updatedStock.setUpdatedAt(LocalDateTime.now());
 
-        return stockMapper.fromModelToDto(stockMapper.fromEntityToModel(stockRepository.save(updatedStock)));
+        return stockMapper.fromEntityToDto(stockRepository.save(updatedStock));
     }
 
     @Override
     @Transactional
-    public void deleteStock(Long id) {
+    public void softDeleteStock(Long id) {
 
         Stock stock = stockRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(STOCK_ID_NOT_FOUND_MESSAGE, id)));
@@ -99,5 +113,12 @@ public class StockServiceImpl implements StockService {
         stock.setDeletedAt(LocalDateTime.now());
 
         stockRepository.save(stock);
+    }
+
+    @Override
+    @Transactional
+    public void hardDeleteStock(Long id) {
+
+        stockRepository.deleteById(id);
     }
 }

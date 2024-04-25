@@ -4,6 +4,8 @@ import com.amanefer.crud.dto.ProductDto;
 import com.amanefer.crud.services.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +27,7 @@ import java.util.List;
 public class ProductController {
 
     private static final String DELETE_PRODUCT_MESSAGE = "Product with ID '%s' was deleted";
+
     private final ProductService productService;
 
 
@@ -64,6 +67,16 @@ public class ProductController {
     public List<ProductDto> getAllProducts() {
 
         return productService.getAllProducts();
+    }
+
+    @GetMapping("all/pages")
+    public Page<ProductDto> getAllProductsAsPage(@RequestParam(required = false) String title,
+                                                 @RequestParam(required = false, defaultValue = "0") int pageNumber,
+                                                 @RequestParam(required = false, defaultValue = "3") int pageSize) {
+
+        return title == null ?
+                productService.getPageOfAllProducts(PageRequest.of(pageNumber, pageSize)) :
+                productService.getPageOfAllProductsByTitle(title, PageRequest.of(pageNumber, pageSize));
     }
 
     @GetMapping("/{id}")

@@ -23,4 +23,10 @@ public interface ProductQuantityMapper extends BaseMapper<ProductQuantityDto, Pr
     @Override
     ProductQuantityDto fromModelToDto(ProductQuantityModel productQuantityModel);
 
+    @Override
+    ProductQuantityDto fromEntityToDto(ProductQuantity productQuantity);
+
+    @Override
+    ProductQuantity fromDtoToEntity(ProductQuantityDto productQuantityDto);
+
 }

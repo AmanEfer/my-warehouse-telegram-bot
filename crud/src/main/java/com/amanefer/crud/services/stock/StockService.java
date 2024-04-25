@@ -18,5 +18,7 @@ public interface StockService {
 
     StockDto updateStock(Long id, StockDto stockDto);
 
-    void deleteStock(Long id);
+    void softDeleteStock(Long id);
+
+    void hardDeleteStock(Long id);
 }

@@ -5,6 +5,7 @@ import com.amanefer.crud.entities.Product;
 import com.amanefer.crud.models.ProductModel;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -26,10 +27,20 @@ public interface ProductMapper extends BaseMapper<ProductDto, ProductModel, Prod
     @Override
     ProductDto fromModelToDto(ProductModel productModel);
 
+    @Override
+    ProductDto fromEntityToDto(Product product);
+
+    @Override
+    Product fromDtoToEntity(ProductDto productDto);
+
     List<Product> fromModelToEntityList(List<ProductModel> productModelList);
 
-    List<ProductModel> fromEntityToModelList(List<Product> productList);
+    List<ProductDto> fromEntityToDtoList(List<Product> productList);
 
-    List<ProductDto> fromModelToDtoList(List<ProductModel> productModelList);
+
+    default Page<ProductDto> fromEntityToDtoPage(Page<Product> productPage) {
+
+        return productPage.map(this::fromEntityToDto);
+    }
 
 }

@@ -64,9 +64,17 @@ public class StockController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteStock(@PathVariable("id") Long id) {
+    public String softDeleteStock(@PathVariable("id") Long id) {
 
-        stockService.deleteStock(id);
+        stockService.softDeleteStock(id);
+
+        return String.format(DELETE_STOCK_MESSAGE, id);
+    }
+
+    @DeleteMapping("/hard/{id}")
+    public String hardDeleteStock(@PathVariable("id") Long id) {
+
+        stockService.hardDeleteStock(id);
 
         return String.format(DELETE_STOCK_MESSAGE, id);
     }

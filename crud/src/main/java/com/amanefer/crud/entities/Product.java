@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,4 +44,11 @@ public class Product {
 
     private LocalDateTime deletedAt;
 
+    @Transient
+    private boolean archived;
+
+
+    public boolean isArchived() {
+        return this.deletedAt != null;
+    }
 }
