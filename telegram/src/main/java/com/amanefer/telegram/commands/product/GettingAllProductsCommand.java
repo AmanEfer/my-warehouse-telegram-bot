@@ -6,7 +6,7 @@ import com.amanefer.telegram.commands.Command;
 import com.amanefer.telegram.dto.ProductDto;
 import com.amanefer.telegram.dto.ProductQuantityDto;
 import com.amanefer.telegram.services.RestToCrud;
-import com.amanefer.telegram.util.BotState;
+import com.amanefer.telegram.util.UserState;
 import com.amanefer.telegram.util.UpdateTransferData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -39,7 +39,7 @@ public class GettingAllProductsCommand implements Command {
 
         String textMessage = buildTextMessage(products);
 
-        userStateCache.putInCache(updateTransferData.getUserId(), BotState.PRIMARY);
+        userStateCache.putInCache(updateTransferData.getUserId(), UserState.PRIMARY);
 
         return SendMessage.builder()
                 .chatId(updateTransferData.getChatId())

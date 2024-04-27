@@ -3,7 +3,7 @@ package com.amanefer.telegram.util;
 import lombok.Getter;
 
 @Getter
-public enum BotState {
+public enum UserState {
     PRIMARY,
     CREATE_STOCK,
     SAVE_PRODUCT_INPUT_PRODUCT_TITLE,

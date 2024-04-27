@@ -4,7 +4,7 @@ import com.amanefer.telegram.cache.ProductTransferDataCache;
 import com.amanefer.telegram.cache.UserStateCache;
 import com.amanefer.telegram.commands.Command;
 import com.amanefer.telegram.commands.TelegramCommands;
-import com.amanefer.telegram.util.BotState;
+import com.amanefer.telegram.util.UserState;
 import com.amanefer.telegram.util.Button;
 import com.amanefer.telegram.util.UpdateTransferData;
 import jakarta.annotation.PostConstruct;
@@ -111,7 +111,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         long userId = updateTransferData.getUserId();
         String messageText = updateTransferData.getText();
         boolean isNotCommand = checkMessageTextIsNotCommand(messageText);
-        BotState currentState = statesCache.getFromCache(updateTransferData.getUserId());
+        UserState currentState = statesCache.getFromCache(updateTransferData.getUserId());
 
         switch (currentState) {
 
@@ -121,7 +121,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     updateTransferData.setDataForDto(messageText);
                     messageText = Button.CREATE_NEW_STOCK.toString();
                 } else {
-                    statesCache.putInCache(userId, BotState.PRIMARY);
+                    statesCache.putInCache(userId, UserState.PRIMARY);
                 }
             }
 
@@ -132,7 +132,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     updateTransferData.setDataForDto(messageText);
                     messageText = Button.SAVE_NEW_PRODUCT.toString();
                 } else {
-                    statesCache.putInCache(userId, BotState.PRIMARY);
+                    statesCache.putInCache(userId, UserState.PRIMARY);
                 }
             }
 
@@ -146,7 +146,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     updateTransferData.setDataForDto(messageText);
                     messageText = Button.MOVE_PRODUCTS_BUTTON.toString();
                 } else {
-                    statesCache.putInCache(userId, BotState.PRIMARY);
+                    statesCache.putInCache(userId, UserState.PRIMARY);
                 }
             }
             case MOVE_PRODUCT -> {
@@ -155,11 +155,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                     updateTransferData.setDataForDto(stockTo);
                     messageText = Button.MOVE_PRODUCTS_BUTTON.toString();
 
-                    statesCache.putInCache(userId, BotState.MOVE_PRODUCT_INPUT_STOCK_TO);
+                    statesCache.putInCache(userId, UserState.MOVE_PRODUCT_INPUT_STOCK_TO);
                 } else if (messageText.equals(Button.NO_MOVE_PRODUCT_BUTTON.toString())) {
                     messageText = Button.MOVE_PRODUCTS_BUTTON.toString();
                 } else {
-                    statesCache.putInCache(userId, BotState.PRIMARY);
+                    statesCache.putInCache(userId, UserState.PRIMARY);
                 }
             }
         }

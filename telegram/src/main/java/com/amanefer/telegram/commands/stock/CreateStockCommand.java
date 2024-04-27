@@ -5,7 +5,7 @@ import com.amanefer.telegram.cache.UserStateCache;
 import com.amanefer.telegram.commands.Command;
 import com.amanefer.telegram.dto.StockDto;
 import com.amanefer.telegram.services.RestToCrud;
-import com.amanefer.telegram.util.BotState;
+import com.amanefer.telegram.util.UserState;
 import com.amanefer.telegram.util.UpdateTransferData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,6 +19,7 @@ public class CreateStockCommand implements Command {
 
     public static final String INPUT_WAREHOUSE_NAME = "Please, input your new warehouse's name";
     public static final String WAREHOUSE_CREATE_MESSAGE = "Warehouse '%s' was created successfully!";
+    public static final String STOCK_CREATE_FAIL = "Warehouse wasn't created, try again";
 
     private final RestToCrud rest;
     private final UserStateCache userStateCache;
@@ -35,23 +36,32 @@ public class CreateStockCommand implements Command {
 
         long chatId = updateTransferData.getChatId();
         long userId = updateTransferData.getUserId();
-        BotState userState = userStateCache.getFromCache(userId);
+        UserState userState = userStateCache.getFromCache(userId);
 
-        if (userState == BotState.PRIMARY) {
-            userStateCache.putInCache(userId, BotState.CREATE_STOCK);
+        if (userState == UserState.PRIMARY) {
+            userStateCache.putInCache(userId, UserState.CREATE_STOCK);
 
             return SendMessage.builder()
                     .chatId(chatId)
                     .text(INPUT_WAREHOUSE_NAME)
                     .build();
-        } else {
+
+        } else if (userState == UserState.CREATE_STOCK) {
             String stockName = rest.saveNewStock(new StockDto(updateTransferData.getDataForDto())).getStockName();
 
-            userStateCache.putInCache(chatId, BotState.PRIMARY);
+            userStateCache.putInCache(chatId, UserState.PRIMARY);
 
             return SendMessage.builder()
                     .chatId(chatId)
                     .text(String.format(WAREHOUSE_CREATE_MESSAGE, stockName))
+                    .build();
+
+        } else {
+            userStateCache.putInCache(userId, UserState.PRIMARY);
+
+            return SendMessage.builder()
+                    .chatId(chatId)
+                    .text(STOCK_CREATE_FAIL)
                     .build();
         }
     }

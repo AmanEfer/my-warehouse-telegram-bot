@@ -5,7 +5,7 @@ import com.amanefer.telegram.cache.UserStateCache;
 import com.amanefer.telegram.commands.Command;
 import com.amanefer.telegram.dto.StockDto;
 import com.amanefer.telegram.services.RestToCrud;
-import com.amanefer.telegram.util.BotState;
+import com.amanefer.telegram.util.UserState;
 import com.amanefer.telegram.util.UpdateTransferData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -36,7 +36,7 @@ public class GettingAllStocksCommand implements Command {
                 .map(StockDto::getStockName)
                 .collect(Collectors.joining(",\n"));
 
-        userStateCache.putInCache(updateTransferData.getUserId(), BotState.PRIMARY);
+        userStateCache.putInCache(updateTransferData.getUserId(), UserState.PRIMARY);
 
         return SendMessage.builder()
                 .chatId(updateTransferData.getChatId())

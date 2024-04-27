@@ -6,7 +6,7 @@ import com.amanefer.telegram.cache.UserStateCache;
 import com.amanefer.telegram.commands.Command;
 import com.amanefer.telegram.dto.ProductDto;
 import com.amanefer.telegram.services.RestToCrud;
-import com.amanefer.telegram.util.BotState;
+import com.amanefer.telegram.util.UserState;
 import com.amanefer.telegram.util.UpdateTransferData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -39,35 +39,35 @@ public class SaveProductCommand implements Command {
         long chatId = updateTransferData.getChatId();
         long userId = updateTransferData.getUserId();
         String dataForDto = updateTransferData.getDataForDto();
-        BotState userState = userStateCache.getFromCache(userId);
+        UserState userState = userStateCache.getFromCache(userId);
 
-        if (userState == BotState.PRIMARY) {
-            userStateCache.putInCache(userId, BotState.SAVE_PRODUCT_INPUT_PRODUCT_TITLE);
+        if (userState == UserState.PRIMARY) {
+            userStateCache.putInCache(userId, UserState.SAVE_PRODUCT_INPUT_PRODUCT_TITLE);
 
             return SendMessage.builder()
                     .chatId(chatId)
                     .text(INPUT_PRODUCT_ARTICLE)
                     .build();
 
-        } else if (userState == BotState.SAVE_PRODUCT_INPUT_PRODUCT_TITLE) {
+        } else if (userState == UserState.SAVE_PRODUCT_INPUT_PRODUCT_TITLE) {
             ProductDto product = new ProductDto();
             product.setArticle(dataForDto);
 
             productStateCache.putInCache(userId, product);
-            userStateCache.putInCache(userId, BotState.SAVE_PRODUCT);
+            userStateCache.putInCache(userId, UserState.SAVE_PRODUCT);
 
             return SendMessage.builder()
                     .chatId(chatId)
                     .text(INPUT_PRODUCT_TITLE)
                     .build();
 
-        } else if (userState == BotState.SAVE_PRODUCT) {
+        } else if (userState == UserState.SAVE_PRODUCT) {
             ProductDto product = productStateCache.getFromCache(userId);
             product.setTitle(dataForDto);
 
             String title = rest.saveNewProduct(product).getTitle();
 
-            userStateCache.putInCache(userId, BotState.PRIMARY);
+            userStateCache.putInCache(userId, UserState.PRIMARY);
 
             return SendMessage.builder()
                     .chatId(chatId)
@@ -75,7 +75,7 @@ public class SaveProductCommand implements Command {
                     .build();
 
         } else {
-            userStateCache.putInCache(userId, BotState.PRIMARY);
+            userStateCache.putInCache(userId, UserState.PRIMARY);
 
             return SendMessage.builder()
                     .chatId(chatId)

@@ -24,8 +24,6 @@ public class ProductDto {
     private BigDecimal saleLastPrice;
     private Integer commonQuantity;
     private BigDecimal gain;
-    private String fromStock;
-    private String toStock;
 
 
     public ProductDto(String article) {

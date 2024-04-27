@@ -4,7 +4,7 @@ import com.amanefer.telegram.util.Button;
 import com.amanefer.telegram.cache.UserStateCache;
 import com.amanefer.telegram.dto.UserDto;
 import com.amanefer.telegram.services.RestToCrud;
-import com.amanefer.telegram.util.BotState;
+import com.amanefer.telegram.util.UserState;
 import com.amanefer.telegram.util.UpdateTransferData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,7 +58,7 @@ public class StartCommand implements Command {
 
         rest.registerNewUser(user, userId == adminId ? ROLE_ADMIN : ROLE_USER);
 
-        userStateCache.putInCache(userId, BotState.PRIMARY);
+        userStateCache.putInCache(userId, UserState.PRIMARY);
 
         return createStartMessageWithKeyboard(chatId, answer);
     }

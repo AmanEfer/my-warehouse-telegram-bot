@@ -5,7 +5,7 @@ import com.amanefer.telegram.cache.UserStateCache;
 import com.amanefer.telegram.commands.Command;
 import com.amanefer.telegram.dto.RoleDto;
 import com.amanefer.telegram.services.RestToCrud;
-import com.amanefer.telegram.util.BotState;
+import com.amanefer.telegram.util.UserState;
 import com.amanefer.telegram.util.UpdateTransferData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -72,7 +72,7 @@ public class UsersCommand implements Command {
         keyboard.add(row);
         inlineKeyboardMarkup.setKeyboard(keyboard);
 
-        userStateCache.putInCache(updateTransferData.getUserId(), BotState.PRIMARY);
+        userStateCache.putInCache(updateTransferData.getUserId(), UserState.PRIMARY);
 
         return SendMessage.builder()
                 .chatId(updateTransferData.getChatId())

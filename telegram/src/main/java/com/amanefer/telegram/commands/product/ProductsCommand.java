@@ -3,7 +3,7 @@ package com.amanefer.telegram.commands.product;
 import com.amanefer.telegram.util.Button;
 import com.amanefer.telegram.cache.UserStateCache;
 import com.amanefer.telegram.commands.Command;
-import com.amanefer.telegram.util.BotState;
+import com.amanefer.telegram.util.UserState;
 import com.amanefer.telegram.util.UpdateTransferData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -68,7 +68,7 @@ public class ProductsCommand implements Command {
         keyboard.add(row2);
         inlineKeyboardMarkup.setKeyboard(keyboard);
 
-        userStateCache.putInCache(updateTransferData.getUserId(), BotState.PRIMARY);
+        userStateCache.putInCache(updateTransferData.getUserId(), UserState.PRIMARY);
 
         return SendMessage.builder()
                 .chatId(updateTransferData.getChatId())

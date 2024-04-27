@@ -8,7 +8,7 @@ import com.amanefer.telegram.commands.Command;
 import com.amanefer.telegram.dto.ProductDto;
 import com.amanefer.telegram.dto.ProductQuantityDto;
 import com.amanefer.telegram.services.RestToCrud;
-import com.amanefer.telegram.util.BotState;
+import com.amanefer.telegram.util.UserState;
 import com.amanefer.telegram.util.Button;
 import com.amanefer.telegram.util.ProductTransferData;
 import com.amanefer.telegram.util.UpdateTransferData;
@@ -55,60 +55,60 @@ public class MovingProductCommand implements Command {
         long userId = updateTransferData.getUserId();
         long chatId = updateTransferData.getChatId();
         String dataForDto = updateTransferData.getDataForDto();
-        BotState userState = userStateCache.getFromCache(userId);
+        UserState userState = userStateCache.getFromCache(userId);
 
-        if (userState == BotState.PRIMARY) {
-            userStateCache.putInCache(userId, BotState.MOVE_PRODUCT_INPUT_INVOICE_NUMBER);
+        if (userState == UserState.PRIMARY) {
+            userStateCache.putInCache(userId, UserState.MOVE_PRODUCT_INPUT_INVOICE_NUMBER);
 
             return SendMessage.builder()
                     .chatId(chatId)
                     .text(INPUT_INVOICE_NUMBER)
                     .build();
 
-        } else if (userState == BotState.MOVE_PRODUCT_INPUT_INVOICE_NUMBER) {
+        } else if (userState == UserState.MOVE_PRODUCT_INPUT_INVOICE_NUMBER) {
             productTransferDataCache.putInCache(userId, new ProductTransferData(dataForDto));
-            userStateCache.putInCache(userId, BotState.MOVE_PRODUCT_INPUT_STOCK_FROM);
+            userStateCache.putInCache(userId, UserState.MOVE_PRODUCT_INPUT_STOCK_FROM);
 
             return SendMessage.builder()
                     .chatId(chatId)
                     .text(INPUT_STOCK_FROM)
                     .build();
 
-        } else if (userState == BotState.MOVE_PRODUCT_INPUT_STOCK_FROM) {
+        } else if (userState == UserState.MOVE_PRODUCT_INPUT_STOCK_FROM) {
             ProductTransferData productTransferData = productTransferDataCache.getFromCache(userId);
             productTransferData.setStockNameFrom(dataForDto);
 
             List<ProductDto> products = new ArrayList<>();
             productListCache.putInCache(userId, products);
 
-            userStateCache.putInCache(userId, BotState.MOVE_PRODUCT_INPUT_STOCK_TO);
+            userStateCache.putInCache(userId, UserState.MOVE_PRODUCT_INPUT_STOCK_TO);
 
             return SendMessage.builder()
                     .chatId(chatId)
                     .text(INPUT_STOCK_TO)
                     .build();
 
-        } else if (userState == BotState.MOVE_PRODUCT_INPUT_STOCK_TO) {
+        } else if (userState == UserState.MOVE_PRODUCT_INPUT_STOCK_TO) {
             ProductTransferData productTransferData = productTransferDataCache.getFromCache(userId);
             productTransferData.setStockNameTo(dataForDto);
 
-            userStateCache.putInCache(userId, BotState.MOVE_PRODUCT_INPUT_PRODUCT_ARTICLE);
+            userStateCache.putInCache(userId, UserState.MOVE_PRODUCT_INPUT_PRODUCT_ARTICLE);
 
             return SendMessage.builder()
                     .chatId(chatId)
                     .text(INPUT_PRODUCT_ARTICLE)
                     .build();
 
-        } else if (userState == BotState.MOVE_PRODUCT_INPUT_PRODUCT_ARTICLE) {
+        } else if (userState == UserState.MOVE_PRODUCT_INPUT_PRODUCT_ARTICLE) {
             productStateCache.putInCache(userId, new ProductDto(dataForDto));
-            userStateCache.putInCache(userId, BotState.MOVE_PRODUCT_INPUT_PRODUCT_QUANTITY);
+            userStateCache.putInCache(userId, UserState.MOVE_PRODUCT_INPUT_PRODUCT_QUANTITY);
 
             return SendMessage.builder()
                     .chatId(chatId)
                     .text(INPUT_PRODUCT_QUANTITY)
                     .build();
 
-        } else if (userState == BotState.MOVE_PRODUCT_INPUT_PRODUCT_QUANTITY) {
+        } else if (userState == UserState.MOVE_PRODUCT_INPUT_PRODUCT_QUANTITY) {
             InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
             List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
             List<InlineKeyboardButton> row = new ArrayList<>();
@@ -135,7 +135,7 @@ public class MovingProductCommand implements Command {
             List<ProductDto> products = productListCache.getFromCache(userId);
             products.add(product);
 
-            userStateCache.putInCache(userId, BotState.MOVE_PRODUCT);
+            userStateCache.putInCache(userId, UserState.MOVE_PRODUCT);
 
             return SendMessage.builder()
                     .chatId(chatId)
@@ -143,7 +143,7 @@ public class MovingProductCommand implements Command {
                     .replyMarkup(inlineKeyboardMarkup)
                     .build();
 
-        } else if (userState == BotState.MOVE_PRODUCT) {
+        } else if (userState == UserState.MOVE_PRODUCT) {
             ProductTransferData transferData = productTransferDataCache.getFromCache(userId);
 
             List<ProductDto> movedProducts = restToCrud.moveProducts(
@@ -154,7 +154,7 @@ public class MovingProductCommand implements Command {
             );
 
             String textMessage = buildTextMessage(movedProducts);
-            userStateCache.putInCache(userId, BotState.PRIMARY);
+            userStateCache.putInCache(userId, UserState.PRIMARY);
 
             return SendMessage.builder()
                     .chatId(chatId)
@@ -162,7 +162,7 @@ public class MovingProductCommand implements Command {
                     .build();
 
         } else {
-            userStateCache.putInCache(userId, BotState.PRIMARY);
+            userStateCache.putInCache(userId, UserState.PRIMARY);
 
             return SendMessage.builder()
                     .chatId(chatId)
