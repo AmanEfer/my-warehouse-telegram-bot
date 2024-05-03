@@ -6,21 +6,21 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
+@SuperBuilder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Product {
+public class Product extends BaseEntity {
 
     @Id
     @NotBlank
@@ -38,17 +38,4 @@ public class Product {
 
     private BigDecimal saleLastPrice;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    private LocalDateTime deletedAt;
-
-    @Transient
-    private boolean archived;
-
-
-    public boolean isArchived() {
-        return this.deletedAt != null;
-    }
 }

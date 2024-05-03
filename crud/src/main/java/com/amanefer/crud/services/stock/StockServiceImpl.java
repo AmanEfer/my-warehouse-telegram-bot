@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,9 +28,14 @@ public class StockServiceImpl implements StockService {
     @Override
     public List<StockDto> getAllStocks() {
 
-        return stockRepository.findAllByDeletedAtIsNull().stream()
-                .map(stockMapper::fromEntityToDto)
-                .collect(Collectors.toList());
+        List<Stock> stocks = stockRepository.findAllByDeletedAtIsNull();
+
+        if (stocks.isEmpty())
+            return Collections.emptyList();
+        else
+            return stocks.stream()
+                    .map(stockMapper::fromEntityToDto)
+                    .collect(Collectors.toList());
     }
 
     @Override

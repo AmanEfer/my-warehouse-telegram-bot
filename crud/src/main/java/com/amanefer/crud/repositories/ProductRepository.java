@@ -15,8 +15,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     List<Product> findAllByDeletedAtIsNull();
 
-    @Query("from Product p where p.deletedAt is null")
-    Page<Product> findAllByDeletedAtIsNullReturnsPageOfProducts(PageRequest pageRequest);
+    Page<Product> findAllByDeletedAtIsNull(PageRequest pageRequest);
 
     @Query("from Product p where p.title ilike '%:title%' and p.deletedAt is null")
     Page<Product> findAllByByTitleAndDeletedAtIsNullReturnsPageOfProducts(String title, PageRequest pageRequest);

@@ -15,24 +15,6 @@ import java.util.List;
         injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface ProductMapper extends BaseMapper<ProductDto, ProductModel, Product> {
 
-    @Override
-    ProductModel fromDtoToModel(ProductDto productDto);
-
-    @Override
-    Product fromModelToEntity(ProductModel productModel);
-
-    @Override
-    ProductModel fromEntityToModel(Product product);
-
-    @Override
-    ProductDto fromModelToDto(ProductModel productModel);
-
-    @Override
-    ProductDto fromEntityToDto(Product product);
-
-    @Override
-    Product fromDtoToEntity(ProductDto productDto);
-
     List<Product> fromModelToEntityList(List<ProductModel> productModelList);
 
     List<ProductDto> fromEntityToDtoList(List<Product> productList);

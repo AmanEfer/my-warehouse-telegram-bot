@@ -11,22 +11,4 @@ import com.amanefer.crud.entities.Role;
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface RoleMapper extends BaseMapper<RoleDto, RoleModel, Role> {
 
-    @Override
-    RoleModel fromDtoToModel(RoleDto roleDto);
-
-    @Override
-    Role fromModelToEntity(RoleModel roleModel);
-
-    @Override
-    RoleModel fromEntityToModel(Role role);
-
-    @Override
-    RoleDto fromModelToDto(RoleModel roleModel);
-
-    @Override
-    RoleDto fromEntityToDto(Role role);
-
-    @Override
-    Role fromDtoToEntity(RoleDto roleDto);
-
 }

@@ -74,9 +74,7 @@ public class ProductController {
                                                  @RequestParam(required = false, defaultValue = "0") int pageNumber,
                                                  @RequestParam(required = false, defaultValue = "3") int pageSize) {
 
-        return title == null ?
-                productService.getPageOfAllProducts(PageRequest.of(pageNumber, pageSize)) :
-                productService.getPageOfAllProductsByTitle(title, PageRequest.of(pageNumber, pageSize));
+        return productService.getPageOfAllProducts(title, PageRequest.of(pageNumber, pageSize));
     }
 
     @GetMapping("/{id}")

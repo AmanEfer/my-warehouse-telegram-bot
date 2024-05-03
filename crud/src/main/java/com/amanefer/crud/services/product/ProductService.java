@@ -13,7 +13,7 @@ public interface ProductService {
 
     Page<ProductDto> getPageOfAllProducts(PageRequest pageRequest);
 
-    Page<ProductDto> getPageOfAllProductsByTitle(String title, PageRequest pageRequest);
+    Page<ProductDto> getPageOfAllProducts(String title, PageRequest pageRequest);
 
     ProductDto getProductByArticle(String article);
 

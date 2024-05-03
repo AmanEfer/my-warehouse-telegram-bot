@@ -224,14 +224,17 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductDto> getPageOfAllProducts(PageRequest pageRequest) {
 
         return productMapper.fromEntityToDtoPage(
-                productRepository.findAllByDeletedAtIsNullReturnsPageOfProducts(pageRequest));
+                productRepository.findAllByDeletedAtIsNull(pageRequest));
     }
 
     @Override
-    public Page<ProductDto> getPageOfAllProductsByTitle(String title, PageRequest pageRequest) {
+    public Page<ProductDto> getPageOfAllProducts(String title, PageRequest pageRequest) {
 
-        return productMapper.fromEntityToDtoPage(
-                productRepository.findAllByByTitleAndDeletedAtIsNullReturnsPageOfProducts(title, pageRequest));
+        if (title == null)
+            return this.getPageOfAllProducts(pageRequest);
+        else
+            return productMapper.fromEntityToDtoPage(
+                    productRepository.findAllByByTitleAndDeletedAtIsNullReturnsPageOfProducts(title, pageRequest));
     }
 
     @Override

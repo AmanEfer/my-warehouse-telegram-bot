@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,9 +33,13 @@ public class GettingAllStocksCommand implements Command {
     @Override
     public PartialBotApiMethod<Message> process(UpdateTransferData updateTransferData) {
 
-        String textMessage = restToCrud.getAllStocks().stream()
-                .map(StockDto::getStockName)
-                .collect(Collectors.joining(",\n"));
+        String textMessage = "There aren't any saved stocks";
+        List<StockDto> stocks = restToCrud.getAllStocks();
+
+        if (!stocks.isEmpty())
+            textMessage = stocks.stream()
+                    .map(StockDto::getStockName)
+                    .collect(Collectors.joining(",\n"));
 
         userStateCache.putInCache(updateTransferData.getUserId(), UserState.PRIMARY);
 
