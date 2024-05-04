@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -215,9 +216,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> getAllProducts() {
 
-        return productRepository.findAllByDeletedAtIsNull().stream()
-                .map(productMapper::fromEntityToDto)
-                .collect(Collectors.toList());
+        List<Product> products = productRepository.findAllByDeletedAtIsNull();
+
+        if (products.isEmpty())
+            return Collections.emptyList();
+        else
+            return products.stream()
+                    .map(productMapper::fromEntityToDto)
+                    .collect(Collectors.toList());
     }
 
     @Override

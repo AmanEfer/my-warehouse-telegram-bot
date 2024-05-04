@@ -1,13 +1,12 @@
 package com.amanefer.telegram.commands.user;
 
-import com.amanefer.telegram.util.Button;
 import com.amanefer.telegram.cache.UserStateCache;
 import com.amanefer.telegram.commands.Command;
 import com.amanefer.telegram.dto.RoleDto;
 import com.amanefer.telegram.services.RestToCrud;
-import com.amanefer.telegram.util.UserState;
+import com.amanefer.telegram.util.Button;
 import com.amanefer.telegram.util.UpdateTransferData;
-import lombok.RequiredArgsConstructor;
+import com.amanefer.telegram.util.UserState;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -21,7 +20,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 public class UsersCommand implements Command {
 
     private static final String ADMIN_TEXT = "Which data would you want to get?";
@@ -30,7 +28,19 @@ public class UsersCommand implements Command {
 
     private final RestToCrud restToCrud;
     private final UserStateCache userStateCache;
+    private static final InlineKeyboardMarkup USERS_KEYBOARD_ADMIN;
+    private static final InlineKeyboardMarkup USERS_KEYBOARD_USER;
 
+    static {
+        USERS_KEYBOARD_ADMIN = buildKeyboard(true);
+        USERS_KEYBOARD_USER = buildKeyboard(false);
+    }
+
+
+    public UsersCommand(RestToCrud restToCrud, UserStateCache userStateCache) {
+        this.restToCrud = restToCrud;
+        this.userStateCache = userStateCache;
+    }
 
     @Override
     public boolean support(String command) {
@@ -42,16 +52,25 @@ public class UsersCommand implements Command {
     @Override
     public PartialBotApiMethod<Message> process(UpdateTransferData updateTransferData) {
 
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-        List<InlineKeyboardButton> row = new ArrayList<>();
-
         Set<String> rolesNames = restToCrud.getUser(updateTransferData.getUserId())
                 .getRole().stream()
                 .map(RoleDto::getName)
                 .collect(Collectors.toSet());
 
         boolean isAdmin = rolesNames.contains(ROLE_ADMIN);
+
+        userStateCache.putInCache(updateTransferData.getUserId(), UserState.PRIMARY);
+
+        return SendMessage.builder()
+                .chatId(updateTransferData.getChatId())
+                .text(isAdmin ? ADMIN_TEXT : USER_TEXT)
+                .replyMarkup(isAdmin ? USERS_KEYBOARD_ADMIN : USERS_KEYBOARD_USER)
+                .build();
+    }
+
+    private static InlineKeyboardMarkup buildKeyboard(boolean isAdmin) {
+
+        List<InlineKeyboardButton> row = new ArrayList<>();
 
         if (isAdmin) {
             InlineKeyboardButton allUsersButton = InlineKeyboardButton.builder()
@@ -69,16 +88,13 @@ public class UsersCommand implements Command {
 
         row.add(userDataButton);
 
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         keyboard.add(row);
+
+        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         inlineKeyboardMarkup.setKeyboard(keyboard);
 
-        userStateCache.putInCache(updateTransferData.getUserId(), UserState.PRIMARY);
-
-        return SendMessage.builder()
-                .chatId(updateTransferData.getChatId())
-                .text(isAdmin ? ADMIN_TEXT : USER_TEXT)
-                .replyMarkup(inlineKeyboardMarkup)
-                .build();
+        return inlineKeyboardMarkup;
     }
 
 }

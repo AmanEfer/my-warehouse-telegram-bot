@@ -35,9 +35,11 @@ public class GettingAllProductsCommand implements Command {
     @Override
     public PartialBotApiMethod<Message> process(UpdateTransferData updateTransferData) {
 
+        String textMessage = "There aren't any saved products";
         List<ProductDto> products = restToCrud.getAllProducts();
 
-        String textMessage = buildTextMessage(products);
+        if (!products.isEmpty())
+            textMessage = buildTextMessage(products);
 
         userStateCache.putInCache(updateTransferData.getUserId(), UserState.PRIMARY);
 

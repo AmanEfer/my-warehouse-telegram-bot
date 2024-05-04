@@ -6,7 +6,6 @@ import com.amanefer.telegram.dto.UserDto;
 import com.amanefer.telegram.services.RestToCrud;
 import com.amanefer.telegram.util.UserState;
 import com.amanefer.telegram.util.UpdateTransferData;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -18,9 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class StartCommand implements Command {
 
+    private static final ReplyKeyboardMarkup START_KEYBOARD;
     public static final String ROLE_USER = "ROLE_USER";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     private static final String MESSAGE_TEXT = """
@@ -29,12 +28,39 @@ public class StartCommand implements Command {
             Choose your next action:
             """;
 
-    @Value("${bot.admin}")
-    private long adminId;
-
     private final RestToCrud rest;
     private final UserStateCache userStateCache;
 
+    @Value("${bot.admin}")
+    private long adminId;
+
+    static {
+        KeyboardRow row1 = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
+        KeyboardRow row3 = new KeyboardRow();
+
+        row1.add(new KeyboardButton(Button.STOCKS_BUTTON.getKeyboardName()));
+        row1.add(new KeyboardButton(Button.PRODUCTS_BUTTON.getKeyboardName()));
+        row2.add(new KeyboardButton(Button.USERS_BUTTON.getKeyboardName()));
+        row2.add(new KeyboardButton(Button.REPORTS_BUTTON.getKeyboardName()));
+        row3.add(new KeyboardButton(Button.HELP_BUTTON.getKeyboardName()));
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        keyboard.add(row1);
+        keyboard.add(row2);
+        keyboard.add(row3);
+
+        START_KEYBOARD = new ReplyKeyboardMarkup();
+        START_KEYBOARD.setSelective(true);
+        START_KEYBOARD.setResizeKeyboard(true);
+        START_KEYBOARD.setOneTimeKeyboard(true);
+        START_KEYBOARD.setKeyboard(keyboard);
+    }
+
+    public StartCommand(RestToCrud rest, UserStateCache userStateCache) {
+        this.rest = rest;
+        this.userStateCache = userStateCache;
+    }
 
     @Override
     public boolean support(String command) {
@@ -60,39 +86,10 @@ public class StartCommand implements Command {
 
         userStateCache.putInCache(userId, UserState.PRIMARY);
 
-        return createStartMessageWithKeyboard(chatId, answer);
-    }
-
-    private SendMessage createStartMessageWithKeyboard(long chatId, String textToSend) {
-
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-
-        replyKeyboardMarkup.setSelective(true);
-        replyKeyboardMarkup.setResizeKeyboard(true);
-        replyKeyboardMarkup.setOneTimeKeyboard(true);
-
-        List<KeyboardRow> keyboard = new ArrayList<>();
-
-        KeyboardRow row = new KeyboardRow();
-        row.add(new KeyboardButton(Button.STOCKS_BUTTON.getKeyboardName()));
-        row.add(new KeyboardButton(Button.PRODUCTS_BUTTON.getKeyboardName()));
-        keyboard.add(row);
-
-        row = new KeyboardRow();
-        row.add(new KeyboardButton(Button.USERS_BUTTON.getKeyboardName()));
-        row.add(new KeyboardButton(Button.REPORTS_BUTTON.getKeyboardName()));
-        keyboard.add(row);
-
-        row = new KeyboardRow();
-        row.add(new KeyboardButton(Button.HELP_BUTTON.getKeyboardName()));
-        keyboard.add(row);
-
-        replyKeyboardMarkup.setKeyboard(keyboard);
-
         return SendMessage.builder()
                 .chatId(chatId)
-                .text(textToSend)
-                .replyMarkup(replyKeyboardMarkup)
+                .text(answer)
+                .replyMarkup(START_KEYBOARD)
                 .build();
     }
 

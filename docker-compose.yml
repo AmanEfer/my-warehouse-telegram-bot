@@ -18,17 +18,27 @@ services:
   telegram:
     build: ./telegram
     ports:
-      - '8080:8080'
+      - '8083:8083'
     restart: unless-stopped
     environment:
       logging.level.root: INFO
-      telegram.botUserName: MyCRUD_bot
-      telegram.botToken:
+      telegram.bot.name: MyCRUD_bot
+      telegram.bot.token:
+      telegram.bot.admin:
+
     extra_hosts:
       - "telegram:127.0.0.1"
     container_name: telegram
     depends_on:
       - crud
+
+  files-exporter:
+    build: ./filesExporter
+    ports:
+      - '8084:8084'
+    extra_hosts:
+      - "filesExporter:127.0.0.1"
+    container_name: files-exporter
 
   db:
     image: postgres:latest

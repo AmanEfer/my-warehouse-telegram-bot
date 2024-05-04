@@ -1,11 +1,10 @@
 package com.amanefer.telegram.commands.product;
 
-import com.amanefer.telegram.util.Button;
 import com.amanefer.telegram.cache.UserStateCache;
 import com.amanefer.telegram.commands.Command;
-import com.amanefer.telegram.util.UserState;
+import com.amanefer.telegram.util.Button;
 import com.amanefer.telegram.util.UpdateTransferData;
-import lombok.RequiredArgsConstructor;
+import com.amanefer.telegram.util.UserState;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 public class ProductsCommand implements Command {
 
+    private static final InlineKeyboardMarkup PRODUCTS_KEYBOARD;
     private static final String MESSAGE_TEXT = """
             Choose your further action:
                         
@@ -29,18 +28,7 @@ public class ProductsCommand implements Command {
 
     private final UserStateCache userStateCache;
 
-
-    @Override
-    public boolean support(String command) {
-
-        return command.equals(Button.PRODUCTS_BUTTON.getMenuName())
-                || command.equals(Button.PRODUCTS_BUTTON.getKeyboardName());
-    }
-
-    @Override
-    public PartialBotApiMethod<Message> process(UpdateTransferData updateTransferData) {
-
-        InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
+    static {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         List<InlineKeyboardButton> row2 = new ArrayList<>();
@@ -66,14 +54,31 @@ public class ProductsCommand implements Command {
 
         keyboard.add(row1);
         keyboard.add(row2);
-        inlineKeyboardMarkup.setKeyboard(keyboard);
+
+        PRODUCTS_KEYBOARD = new InlineKeyboardMarkup();
+        PRODUCTS_KEYBOARD.setKeyboard(keyboard);
+    }
+
+    public ProductsCommand(UserStateCache userStateCache) {
+        this.userStateCache = userStateCache;
+    }
+
+    @Override
+    public boolean support(String command) {
+
+        return command.equals(Button.PRODUCTS_BUTTON.getMenuName())
+                || command.equals(Button.PRODUCTS_BUTTON.getKeyboardName());
+    }
+
+    @Override
+    public PartialBotApiMethod<Message> process(UpdateTransferData updateTransferData) {
 
         userStateCache.putInCache(updateTransferData.getUserId(), UserState.PRIMARY);
 
         return SendMessage.builder()
                 .chatId(updateTransferData.getChatId())
                 .text(MESSAGE_TEXT)
-                .replyMarkup(inlineKeyboardMarkup)
+                .replyMarkup(PRODUCTS_KEYBOARD)
                 .build();
     }
 }
