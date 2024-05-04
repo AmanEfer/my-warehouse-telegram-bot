@@ -9,4 +9,9 @@ public interface BaseMapper<D, M, E> {
     M fromEntityToModel(E e);
 
     D fromModelToDto(M m);
+
+    D fromEntityToDto(E e);
+
+    E fromDtoToEntity(D d);
+
 }

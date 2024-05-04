@@ -11,16 +11,4 @@ import org.springframework.stereotype.Component;
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface UserMapper extends BaseMapper<UserDto, UserModel, User> {
 
-    @Override
-    UserModel fromDtoToModel(UserDto userDto);
-
-    @Override
-    User fromModelToEntity(UserModel userModel);
-
-    @Override
-    UserModel fromEntityToModel(User user);
-
-    @Override
-    UserDto fromModelToDto(UserModel userModel);
-
 }

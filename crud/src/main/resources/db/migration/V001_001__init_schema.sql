@@ -1,6 +1,6 @@
-create table if not exists my_db_bot.my_role
+create table if not exists my_db_bot.role
 (
-    id bigserial constraint my_role_pkey primary key,
+    id bigserial constraint role_pkey primary key,
     name varchar(225) not null
 );
 
@@ -11,10 +11,10 @@ create table if not exists my_db_bot.my_user
     constraint my_user_check_username_length check (length(username) >= 2 and length(username) <= 20)
 );
 
-create table if not exists my_db_bot.my_user_my_role
+create table if not exists my_db_bot.my_user_role
 (
     user_id bigint references my_db_bot.my_user (id),
-    role_id bigint references my_db_bot.my_role (id),
+    role_id bigint references my_db_bot.role (id),
     constraint user_role_pkey primary key (user_id, role_id)
 );
 
@@ -41,7 +41,7 @@ create table if not exists my_db_bot.stock
 create table if not exists my_db_bot.product_quantity
 (
     id bigserial constraint product_quantity_id_pkey primary key,
-    product_id varchar(6) not null references my_db_bot.product (article),
+    product_id varchar(6) not null references my_db_bot.product (article) on delete cascade,
     stock_id bigint not null references my_db_bot.stock (id),
     quantity int default 0,
     constraint product_quantity_check_quantity_value check (quantity >= 0),

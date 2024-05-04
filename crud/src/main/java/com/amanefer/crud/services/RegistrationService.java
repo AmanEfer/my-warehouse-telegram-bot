@@ -24,16 +24,13 @@ public class RegistrationService {
 
         User savedUser = userService.getUserByUsernameAsOptional(dto.getUsername()).orElseGet(
                 () -> {
-                    User user = roleValidator.addRole(
-                            userMapper.fromModelToEntity(userMapper.fromDtoToModel(dto)),
-                            roleName
-                    );
+                    User user = roleValidator.addRole(userMapper.fromDtoToEntity(dto), roleName);
 
                     return userService.saveUserAsEntity(user);
                 }
         );
 
-        return userMapper.fromModelToDto(userMapper.fromEntityToModel(savedUser));
+        return userMapper.fromEntityToDto(savedUser);
     }
 
 }

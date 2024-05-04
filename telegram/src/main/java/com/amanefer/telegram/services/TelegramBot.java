@@ -1,10 +1,17 @@
 package com.amanefer.telegram.services;
 
+import com.amanefer.telegram.cache.ProductTransferDataCache;
+import com.amanefer.telegram.cache.UserStateCache;
 import com.amanefer.telegram.commands.Command;
-import com.amanefer.telegram.config.BotConfig;
+import com.amanefer.telegram.commands.TelegramCommands;
+import com.amanefer.telegram.util.UserState;
+import com.amanefer.telegram.util.Button;
+import com.amanefer.telegram.util.UpdateTransferData;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.PartialBotApiMethod;
@@ -17,8 +24,8 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 @Getter
@@ -26,23 +33,34 @@ import java.util.List;
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
 
-    public static final String START_COMMAND = "/start";
-    public static final String REGISTER_COMMAND = "/register";
-    public static final String EXPORT_COMMAND = "/export";
-    public static final String DEFAULT_MESSAGE_TEXT = "Sorry, command wasn't recognize";
+    public static final String DEFAULT_MESSAGE_TEXT = "Sorry, that command doesn't exist";
 
-    private final BotConfig botConfig;
+    private final String botName;
     private final List<Command> commands;
+    private final TelegramCommands telegramCommands;
+    private final UserStateCache statesCache;
+    private final ProductTransferDataCache productTransferDataCache;
 
-    public TelegramBot(BotConfig botConfig, List<Command> commands) {
 
-        this.botConfig = botConfig;
+    public TelegramBot(@Value("${bot.token}") String botToken,
+                       @Value("${bot.name}") String botName,
+                       List<Command> commands,
+                       TelegramCommands telegramCommands,
+                       UserStateCache userStateCache,
+                       ProductTransferDataCache productTransferDataCache) {
+
+        super(botToken);
+        this.botName = botName;
         this.commands = commands;
+        this.telegramCommands = telegramCommands;
+        this.statesCache = userStateCache;
+        this.productTransferDataCache = productTransferDataCache;
+    }
 
-        List<BotCommand> listOfCommands = new ArrayList<>();
-        listOfCommands.add(new BotCommand(START_COMMAND, "start of application"));
-        listOfCommands.add(new BotCommand(REGISTER_COMMAND, "to register a new user"));
-        listOfCommands.add(new BotCommand(EXPORT_COMMAND, "export some file"));
+    @PostConstruct
+    public void init() {
+
+        List<BotCommand> listOfCommands = telegramCommands.getListOfCommands();
 
         try {
             this.execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
@@ -52,22 +70,117 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    @Override
+    public String getBotUsername() {
+
+        return botName;
+    }
 
     @Override
     public void onUpdateReceived(Update update) {
 
+        UpdateTransferData updateTransferData = null;
+
         if (update.hasMessage() && update.getMessage().hasText()) {
-            String messageText = update.getMessage().getText();
-            long chatId = update.getMessage().getChatId();
 
-            PartialBotApiMethod<Message> message = commands.stream()
-                    .filter(c -> c.support(messageText))
-                    .findFirst()
-                    .map(c -> c.process(update.getMessage()))
-                    .orElseGet(() -> getDefaultSendMessage(chatId));
+            updateTransferData = createTransferUpdateData(
+                    update.getMessage().getChatId(),
+                    update.getMessage().getFrom().getId(),
+                    update.getMessage().getText(),
+                    update.getMessage().getFrom().getUserName()
+            );
 
-            castAndExecuteSending(message);
+        } else if (update.hasCallbackQuery()) {
+
+            updateTransferData = createTransferUpdateData(
+                    update.getCallbackQuery().getMessage().getChatId(),
+                    update.getCallbackQuery().getFrom().getId(),
+                    update.getCallbackQuery().getData(),
+                    update.getCallbackQuery().getFrom().getUserName()
+            );
         }
+        updateTransferData.setText(getMessageText(updateTransferData));
+
+        PartialBotApiMethod<Message> message = getMessageForSending(updateTransferData);
+
+        castAndExecuteSending(message);
+    }
+
+    private String getMessageText(UpdateTransferData updateTransferData) {
+
+        long userId = updateTransferData.getUserId();
+        String messageText = updateTransferData.getText();
+        boolean isNotCommand = checkMessageTextIsNotCommand(messageText);
+        UserState currentState = statesCache.getFromCache(updateTransferData.getUserId());
+
+        switch (currentState) {
+
+            case CREATE_STOCK -> {
+
+                if (isNotCommand) {
+                    updateTransferData.setDataForDto(messageText);
+                    messageText = Button.CREATE_NEW_STOCK.toString();
+                } else {
+                    statesCache.putInCache(userId, UserState.PRIMARY);
+                }
+            }
+
+            case SAVE_PRODUCT_INPUT_PRODUCT_TITLE,
+                    SAVE_PRODUCT -> {
+
+                if (isNotCommand) {
+                    updateTransferData.setDataForDto(messageText);
+                    messageText = Button.SAVE_NEW_PRODUCT.toString();
+                } else {
+                    statesCache.putInCache(userId, UserState.PRIMARY);
+                }
+            }
+
+            case MOVE_PRODUCT_INPUT_INVOICE_NUMBER,
+                    MOVE_PRODUCT_INPUT_STOCK_FROM,
+                    MOVE_PRODUCT_INPUT_STOCK_TO,
+                    MOVE_PRODUCT_INPUT_PRODUCT_ARTICLE,
+                    MOVE_PRODUCT_INPUT_PRODUCT_QUANTITY -> {
+
+                if (isNotCommand) {
+                    updateTransferData.setDataForDto(messageText);
+                    messageText = Button.MOVE_PRODUCTS_BUTTON.toString();
+                } else {
+                    statesCache.putInCache(userId, UserState.PRIMARY);
+                }
+            }
+            case MOVE_PRODUCT -> {
+                if (messageText.equals(Button.YES_MOVE_PRODUCT_BUTTON.toString())) {
+                    String stockTo = productTransferDataCache.getFromCache(userId).getStockNameTo();
+                    updateTransferData.setDataForDto(stockTo);
+                    messageText = Button.MOVE_PRODUCTS_BUTTON.toString();
+
+                    statesCache.putInCache(userId, UserState.MOVE_PRODUCT_INPUT_STOCK_TO);
+                } else if (messageText.equals(Button.NO_MOVE_PRODUCT_BUTTON.toString())) {
+                    messageText = Button.MOVE_PRODUCTS_BUTTON.toString();
+                } else {
+                    statesCache.putInCache(userId, UserState.PRIMARY);
+                }
+            }
+        }
+
+        return messageText;
+    }
+
+    private boolean checkMessageTextIsNotCommand(String messageText) {
+
+        return Stream.of(Button.values())
+                .flatMap(btn -> Stream.of(btn.name(), btn.getMenuName(), btn.getKeyboardName()))
+                .noneMatch(t -> t.equals(messageText));
+    }
+
+    private PartialBotApiMethod<Message> getMessageForSending(UpdateTransferData updateTransferData) {
+
+        return commands.stream()
+                .filter(c -> c.support(updateTransferData.getText()))
+                .findFirst()
+                .map(c -> c.process(updateTransferData))
+                .orElseGet(() -> getDefaultSendMessage(updateTransferData.getChatId()));
     }
 
     private void castAndExecuteSending(PartialBotApiMethod<Message> message) {
@@ -93,16 +206,14 @@ public class TelegramBot extends TelegramLongPollingBot {
                 .build();
     }
 
-    @Override
-    public String getBotUsername() {
+    private static UpdateTransferData createTransferUpdateData(long chatId, long userId, String text, String userName) {
 
-        return botConfig.getBotName();
-    }
-
-    @Override
-    public String getBotToken() {
-
-        return botConfig.getBotToken();
+        return UpdateTransferData.builder()
+                .chatId(chatId)
+                .userId(userId)
+                .text(text)
+                .userName(userName)
+                .build();
     }
 
 }

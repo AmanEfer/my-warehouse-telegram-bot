@@ -7,4 +7,5 @@ public class StockDto {
 
     private Long id;
     private String stockName;
+    private boolean archived;
 }

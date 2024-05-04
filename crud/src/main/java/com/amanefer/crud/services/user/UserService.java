@@ -12,15 +12,16 @@ public interface UserService {
     List<UserDto> getAllUsers();
 
     UserDto getUser(Long id);
+
     UserDto getUserByUsername(String username);
 
     Optional<User> getUserByUsernameAsOptional(String username);
 
-    UserDto saveUser(UserDto person);
+    UserDto saveUser(UserDto userDto);
 
     User saveUserAsEntity(User user);
 
-    UserDto updateUser(UserDto person);
+    UserDto updateUser(UserDto userDto);
 
     void deleteUser(Long id);
 }

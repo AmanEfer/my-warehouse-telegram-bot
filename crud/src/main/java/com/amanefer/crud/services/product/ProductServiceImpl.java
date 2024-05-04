@@ -10,6 +10,8 @@ import com.amanefer.crud.models.StockModel;
 import com.amanefer.crud.repositories.ProductRepository;
 import com.amanefer.crud.repositories.StockRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
         }
         List<Product> products = productRepository.saveAll(productMapper.fromModelToEntityList(models));
 
-        return productMapper.fromModelToDtoList(productMapper.fromEntityToModelList(products));
+        return productMapper.fromEntityToDtoList(products);
     }
 
     @Override
@@ -82,7 +85,7 @@ public class ProductServiceImpl implements ProductService {
 
         for (ProductDto dto : productDtoList) {
 
-            productRepository.findByTitle(dto.getTitle()).ifPresent(
+            productRepository.findById(dto.getArticle()).ifPresent(
                     product -> {
                         product.getQuantityList().stream()
                                 .filter(pq -> pq.getStock().getStockName().equals(stockName))
@@ -109,8 +112,7 @@ public class ProductServiceImpl implements ProductService {
                                                 product.getQuantityList().remove(productQuantity);
                                             }
 
-                                            ProductDto productDto = productMapper.fromModelToDto(
-                                                    productMapper.fromEntityToModel(product));
+                                            ProductDto productDto = productMapper.fromEntityToDto(product);
 
                                             productDto.setGain(gain.setScale(2, RoundingMode.HALF_UP));
 
@@ -139,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
 
         for (ProductDto dto : productDtoList) {
 
-            productRepository.findByTitleAndDeletedAtIsNull(dto.getTitle()).ifPresent(
+            productRepository.findByArticleAndDeletedAtIsNull(dto.getArticle()).ifPresent(
                     product -> {
                         product.getQuantityList().stream()
                                 .filter(qp -> qp.getStock().getStockName().equals(stockNameFrom))
@@ -156,18 +158,19 @@ public class ProductServiceImpl implements ProductService {
 
                                             if (diff > 0) {
                                                 productQuantityFrom.setQuantity(diff);
-                                                productQuantityTo.setQuantity(productQuantityTo.getQuantity() + dto.getCommonQuantity());
+                                                productQuantityTo.setQuantity(productQuantityTo.getQuantity()
+                                                        + dto.getCommonQuantity());
 
                                             } else {
-                                                productQuantityTo.setQuantity(productQuantityTo.getQuantity() + productQuantityFrom.getQuantity());
+                                                productQuantityTo.setQuantity(productQuantityTo.getQuantity()
+                                                        + productQuantityFrom.getQuantity());
                                                 product.getQuantityList().remove(productQuantityFrom);
                                             }
 
                                             product.setUpdatedAt(LocalDateTime.now());
                                             product.getQuantityList().add(productQuantityTo);
 
-                                            ProductDto productDto = productMapper.fromModelToDto(
-                                                    productMapper.fromEntityToModel(product));
+                                            ProductDto productDto = productMapper.fromEntityToDto(product);
 
                                             movedProducts.add(productDto);
                                         }
@@ -182,7 +185,8 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductModel saveProductAsModel(ProductDto productDto) {
 
-        productRepository.findByTitle(productDto.getTitle()).ifPresentOrElse(
+        String article = productDto.getArticle();
+        productRepository.findById(article).ifPresentOrElse(
                 existsProduct -> {
                     if (existsProduct.getDeletedAt() != null) {
                         existsProduct.setDeletedAt(null);
@@ -192,13 +196,14 @@ public class ProductServiceImpl implements ProductService {
                 },
 
                 () -> {
-                    Product savedProduct = productMapper.fromModelToEntity(productMapper.fromDtoToModel(productDto));
+                    Product savedProduct = productMapper.fromDtoToEntity(productDto);
                     savedProduct.setCreatedAt(LocalDateTime.now());
                     productRepository.save(savedProduct);
                 }
         );
 
-        return productMapper.fromEntityToModel(productRepository.findByTitle(productDto.getTitle()).get());
+        return productMapper.fromEntityToModel(productRepository.findById(article).orElseThrow(() ->
+                new IllegalArgumentException(String.format(PRODUCT_NAME_NOT_FOUND_MESSAGE, article))));
     }
 
     @Override
@@ -211,10 +216,31 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> getAllProducts() {
 
-        return productRepository.findAllByDeletedAtIsNull().stream()
-                .map(productMapper::fromEntityToModel)
-                .map(productMapper::fromModelToDto)
-                .collect(Collectors.toList());
+        List<Product> products = productRepository.findAllByDeletedAtIsNull();
+
+        if (products.isEmpty())
+            return Collections.emptyList();
+        else
+            return products.stream()
+                    .map(productMapper::fromEntityToDto)
+                    .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<ProductDto> getPageOfAllProducts(PageRequest pageRequest) {
+
+        return productMapper.fromEntityToDtoPage(
+                productRepository.findAllByDeletedAtIsNull(pageRequest));
+    }
+
+    @Override
+    public Page<ProductDto> getPageOfAllProducts(String title, PageRequest pageRequest) {
+
+        if (title == null)
+            return this.getPageOfAllProducts(pageRequest);
+        else
+            return productMapper.fromEntityToDtoPage(
+                    productRepository.findAllByByTitleAndDeletedAtIsNullReturnsPageOfProducts(title, pageRequest));
     }
 
     @Override
@@ -223,7 +249,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findByArticleAndDeletedAtIsNull(article)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(PRODUCT_ID_NOT_FOUND_MESSAGE, article)));
 
-        return productMapper.fromModelToDto(productMapper.fromEntityToModel(product));
+        return productMapper.fromEntityToDto(product);
     }
 
     @Override
@@ -232,7 +258,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findByTitleAndDeletedAtIsNull(title)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(PRODUCT_NAME_NOT_FOUND_MESSAGE, title)));
 
-        return productMapper.fromModelToDto(productMapper.fromEntityToModel(product));
+        return productMapper.fromEntityToDto(product);
     }
 
     @Override
@@ -242,13 +268,13 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findByArticleAndDeletedAtIsNull(article)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(PRODUCT_ID_NOT_FOUND_MESSAGE, article)));
 
-        Product updatedProduct = productMapper.fromModelToEntity(productMapper.fromDtoToModel(productDto));
+        Product updatedProduct = productMapper.fromDtoToEntity(productDto);
 
         updatedProduct.setArticle(article);
         updatedProduct.setCreatedAt(product.getCreatedAt());
         updatedProduct.setUpdatedAt(LocalDateTime.now());
 
-        return productMapper.fromModelToDto(productMapper.fromEntityToModel(productRepository.save(updatedProduct)));
+        return productMapper.fromEntityToDto(productRepository.save(updatedProduct));
     }
 
     @Override

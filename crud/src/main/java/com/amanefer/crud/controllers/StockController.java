@@ -4,7 +4,6 @@ import com.amanefer.crud.dto.StockDto;
 import com.amanefer.crud.services.stock.StockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -65,9 +64,17 @@ public class StockController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteStock(@PathVariable("id") Long id) {
+    public String softDeleteStock(@PathVariable("id") Long id) {
 
-        stockService.deleteStock(id);
+        stockService.softDeleteStock(id);
+
+        return String.format(DELETE_STOCK_MESSAGE, id);
+    }
+
+    @DeleteMapping("/hard/{id}")
+    public String hardDeleteStock(@PathVariable("id") Long id) {
+
+        stockService.hardDeleteStock(id);
 
         return String.format(DELETE_STOCK_MESSAGE, id);
     }

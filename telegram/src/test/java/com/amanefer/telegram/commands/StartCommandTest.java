@@ -1,56 +1,97 @@
 package com.amanefer.telegram.commands;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.amanefer.telegram.cache.UserStateCache;
+import com.amanefer.telegram.services.RestToCrud;
+import com.amanefer.telegram.util.Button;
+import com.amanefer.telegram.util.UpdateTransferData;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Chat;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class StartCommandTest {
 
-    private static final String START_BUTTON = "/start";
-    private static final Long CHAT_ID = 123456L;
-
-    private Command command;
+    private static final String MESSAGE_TEXT = """
+            Hi, %s, nice to meet you!
+                        
+            Choose your next action:
+            """;
 
     @Mock
-    private Message msg;
+    private RestToCrud restToCrud;
+
+    @Mock
+    private UserStateCache userStateCache;
+
+    @InjectMocks
+    private StartCommand command;
 
 
-    @BeforeEach
-    public void init() {
+    @Test
+    void startCommand_supportTest() {
 
-        command = new StartCommand();
+        assertAll(() -> {
+            assertTrue(command.support(Button.START_BUTTON.getMenuName()));
+            assertTrue(command.support(Button.START_BUTTON.getKeyboardName()));
+        });
     }
 
     @Test
-    public void startCommand_supportTest() {
+    void startCommand_processTest_checkReturnedReplyMarkupAndMessageText() {
 
-        assertTrue(command.support(START_BUTTON));
+        KeyboardButton stocksButton = new KeyboardButton(Button.STOCKS_BUTTON.getKeyboardName());
+        KeyboardButton productsButton = new KeyboardButton(Button.PRODUCTS_BUTTON.getKeyboardName());
+        KeyboardButton usersButton = new KeyboardButton(Button.USERS_BUTTON.getKeyboardName());
+        KeyboardButton reportsButton = new KeyboardButton(Button.REPORTS_BUTTON.getKeyboardName());
+        KeyboardButton helpButton = new KeyboardButton(Button.HELP_BUTTON.getKeyboardName());
+
+        KeyboardRow row1 = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
+        KeyboardRow row3 = new KeyboardRow();
+
+        row1.add(stocksButton);
+        row1.add(productsButton);
+        row2.add(usersButton);
+        row2.add(reportsButton);
+        row3.add(helpButton);
+
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        keyboard.add(row1);
+        keyboard.add(row2);
+        keyboard.add(row3);
+
+        ReplyKeyboardMarkup expectedKeyboardMarkup = new ReplyKeyboardMarkup();
+        expectedKeyboardMarkup.setSelective(true);
+        expectedKeyboardMarkup.setResizeKeyboard(true);
+        expectedKeyboardMarkup.setOneTimeKeyboard(true);
+        expectedKeyboardMarkup.setKeyboard(keyboard);
+
+        UpdateTransferData data = UpdateTransferData.builder()
+                .chatId(111111)
+                .userId(222222)
+                .userName("user1")
+                .build();
+
+        SendMessage actual = command.process(data);
+
+        String expectedText = String.format(MESSAGE_TEXT, data.getUserName());
+
+        assertAll(() -> {
+            assertEquals(expectedText, actual.getText());
+            assertEquals(expectedKeyboardMarkup, actual.getReplyMarkup());
+        });
     }
-
-    @Test
-    public void startCommand_processTest_checkReturnedMessage() {
-
-        Mockito.when(msg.getChatId()).thenReturn(CHAT_ID);
-
-        Chat chat = new Chat();
-        chat.setUserName("user1");
-
-        Mockito.when(msg.getChat()).thenReturn(chat);
-
-        String expected = "Hi, user1, nice to meet you!";
-
-        SendMessage actual = (SendMessage) command.process(msg);
-
-        assertEquals(expected, actual.getText());
-    }
-
 }

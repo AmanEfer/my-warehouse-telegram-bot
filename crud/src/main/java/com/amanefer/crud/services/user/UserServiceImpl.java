@@ -27,8 +27,7 @@ public class UserServiceImpl implements UserService {
     public List<UserDto> getAllUsers() {
 
         return userRepository.findAll().stream()
-                .map(userMapper::fromEntityToModel)
-                .map(userMapper::fromModelToDto)
+                .map(userMapper::fromEntityToDto)
                 .collect(Collectors.toList());
     }
 
@@ -38,7 +37,7 @@ public class UserServiceImpl implements UserService {
         User foundUser = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND_MESSAGE));
 
-        return userMapper.fromModelToDto(userMapper.fromEntityToModel(foundUser));
+        return userMapper.fromEntityToDto(foundUser);
     }
 
     @Override
@@ -47,7 +46,7 @@ public class UserServiceImpl implements UserService {
         User foundUser = userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException(USER_NOT_FOUND_MESSAGE));
 
-        return userMapper.fromModelToDto(userMapper.fromEntityToModel(foundUser));
+        return userMapper.fromEntityToDto(foundUser);
     }
 
     @Override
@@ -58,11 +57,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto saveUser(UserDto user) {
+    public UserDto saveUser(UserDto userDto) {
 
-        User savedUser = userRepository.save(userMapper.fromModelToEntity(userMapper.fromDtoToModel(user)));
+        User savedUser = userRepository.save(userMapper.fromDtoToEntity(userDto));
 
-        return userMapper.fromModelToDto(userMapper.fromEntityToModel(savedUser));
+        return userMapper.fromEntityToDto(savedUser);
     }
 
     @Override
@@ -73,9 +72,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserDto updateUser(UserDto user) {
+    public UserDto updateUser(UserDto userDto) {
 
-        return saveUser(user);
+        return saveUser(userDto);
     }
 
     @Override
